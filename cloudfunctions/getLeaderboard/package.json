@@ -1,7 +1,7 @@
 {
   "name": "getLeaderboard",
   "version": "1.0.0",
-  "description": "获取积分排行榜",
+  "description": "获取星星排行榜",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

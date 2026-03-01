@@ -49,7 +49,7 @@ const db = wx.cloud.database();
   familyId: string,         // 家庭ID
   name: string,             // 孩子姓名
   avatar: string,          // 头像emoji或URL
-  points: number,           // 总积分
+  points: number,           // 总星星
   coins: number,            // 金币
   level: number,            // 等级
   openid: string,          // 用户openid（用于关联用户）
@@ -72,7 +72,7 @@ const db = wx.cloud.database();
   category: string,         // 分类: study/life/exercise/habit/social
   categoryName: string,     // 分类中文名称
   color: string,            // 分类颜色
-  points: number,           // 积分值
+  points: number,           // 星星值
   order: number,            // 排序
   isActive: boolean,       // 是否激活
   templateId: string,      // 模板ID（来自habit_templates）
@@ -91,8 +91,8 @@ const db = wx.cloud.database();
   childId: string,          // 孩子ID
   habitId: string,          // 习惯ID
   date: string,             // 日期 YYYY-MM-DD
-  points: number,           // 获得积分（实际获得的）
-  habitPoints: number,      // 习惯设置的积分值
+  points: number,           // 获得星星（实际获得的）
+  habitPoints: number,      // 习惯设置的星星值
   coins: number,            // 获得金币
   photos: Array,            // 照片URL数组
   remark: string,           // 备注
@@ -114,7 +114,7 @@ const db = wx.cloud.database();
   category: string,        // 分类
   categoryName: string,     // 分类中文名称
   color: string,           // 分类颜色
-  points: number,          // 积分值
+  points: number,          // 星星值
   order: number,            // 排序
 }
 */
@@ -127,7 +127,7 @@ const db = wx.cloud.database();
   _id: string,
   childId: string,          // 孩子ID
   date: string,             // 日期 YYYY-MM-DD
-  totalPoints: number,      // 当日总积分
+  totalPoints: number,      // 当日总星星
   checkInCount: number,     // 打卡次数
   coins: number,            // 当日获得金币
   createTime: Date,
@@ -148,7 +148,7 @@ const db = wx.cloud.database();
   icon: string,            // 图标emoji
   description: string,     // 描述
   condition: string,        // 获得条件说明
-  pointsRequired: number,   // 所需积分
+  pointsRequired: number,   // 所需星星
   color: string,           // 颜色
   rarity: string,          // 稀有度: common/rare/epic/legendary
   category: string,        // 分类: progress/consistency
@@ -214,7 +214,7 @@ const db = wx.cloud.database();
   childId: string,          // 孩子ID
   childName: string,        // 孩子姓名
   avatar: string,           // 头像
-  points: number,           // 积分
+  points: number,           // 星星
   coins: number,            // 金币
   checkInCount: number,     // 总打卡次数
   consecutiveDays: number,  // 连续打卡天数

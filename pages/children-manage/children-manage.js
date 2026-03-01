@@ -234,6 +234,16 @@ Page({
       hideLoading();
       showToast('删除成功');
       this.loadFamilyData();
+      
+      // 标记首页需要刷新
+      getApp().globalData.needRefreshIndex = true;
+      
+      // 延迟返回首页
+      setTimeout(() => {
+        wx.switchTab({
+          url: '/pages/index/index'
+        });
+      }, 500);
     } catch (err) {
       hideLoading();
       console.error('删除孩子失败:', err);
@@ -316,6 +326,16 @@ Page({
       showToast('保存成功');
       this.closeChildModal();
       this.loadFamilyData();
+      
+      // 标记首页需要刷新
+      getApp().globalData.needRefreshIndex = true;
+      
+      // 延迟返回首页
+      setTimeout(() => {
+        wx.switchTab({
+          url: '/pages/index/index'
+        });
+      }, 500);
     } catch (err) {
       hideLoading();
       console.error('保存孩子失败:', err);
@@ -360,7 +380,7 @@ Page({
   showHelp() {
     wx.showModal({
       title: '使用帮助',
-      content: '1. 创建家庭并添加孩子\n2. 选择习惯模板添加习惯\n3. 每天打卡记录孩子完成情况\n4. 获得积分和金币,升级称号\n5. 金币可以兑换礼物',
+      content: '1. 创建家庭并添加孩子\n2. 选择习惯模板添加习惯\n3. 每天打卡记录孩子完成情况\n4. 获得星星和金币,升级称号\n5. 金币可以兑换礼物',
       showCancel: false
     });
   },

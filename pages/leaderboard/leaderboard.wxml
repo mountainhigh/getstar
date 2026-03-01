@@ -2,7 +2,7 @@
 <view class="leaderboard-container">
   <!-- 标题栏 -->
   <view class="header">
-    <text class="title">积分排行榜</text>
+    <text class="title">星星排行榜</text>
   </view>
 
   <!-- 时间筛选 -->
@@ -42,7 +42,7 @@
       <!-- 数据信息 -->
       <view class="stats">
         <view class="stat-item">
-          <text class="stat-label">积分</text>
+          <text class="stat-label">星星</text>
           <text class="stat-value points">{{item.totalPoints}}</text>
         </view>
         <view class="stat-item">

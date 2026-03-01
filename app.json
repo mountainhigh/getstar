@@ -18,7 +18,8 @@
     "navigationBarBackgroundColor": "#FF6B6B",
     "navigationBarTitleText": "GetStar",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#F7F9FC"
+    "backgroundColor": "#F7F9FC",
+    "navigationStyle": "default"
   },
   "tabBar": {
     "color": "#8E8E93",

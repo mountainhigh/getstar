@@ -11,7 +11,7 @@ Page({
     levelProgress: 0,
     levelName: '',
     currentBadge: null,
-    tips: '连续打卡可以获得更多积分哦~',
+    tips: '连续打卡可以获得更多星星哦~',
     showSuccessModal: false,
     showLevelUpModal: false,
     lastPoints: 0,
@@ -41,7 +41,15 @@ Page({
 
   onShow() {
     // 每次显示时刷新数据
-    this.refreshData();
+    const app = getApp();
+    
+    // 检查是否需要刷新（从其他页面返回时）
+    if (app.globalData.needRefreshIndex) {
+      app.globalData.needRefreshIndex = false;
+      this.initPage();
+    } else {
+      this.refreshData();
+    }
   },
 
   /**
@@ -368,6 +376,15 @@ Page({
   goToBadges() {
     wx.navigateTo({
       url: '/pages/badge-collection/badge-collection'
+    });
+  },
+
+  /**
+   * 跳转到礼品兑换页面
+   */
+  goToExchange() {
+    wx.navigateTo({
+      url: '/pages/reward-exchange/reward-exchange'
     });
   },
 

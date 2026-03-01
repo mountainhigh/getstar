@@ -2,15 +2,15 @@
 
 ## 📋 项目简介
 
-GetStar 是一款基于微信小程序的儿童习惯养成激励工具,通过游戏化的积分和金币系统,帮助孩子养成良好的行为习惯。集成了微信账号登录功能，实现不同用户数据完全隔离。
+GetStar 是一款基于微信小程序的儿童习惯养成激励工具,通过游戏化的星星和金币系统,帮助孩子养成良好的行为习惯。集成了微信账号登录功能，实现不同用户数据完全隔离。
 
 ### 核心功能
 
 - **微信登录**: 用户使用微信账号自动登录，数据完全隔离
 - **多孩管理**: 支持一个家庭管理1-5个孩子
 - **习惯打卡**: 30+预设习惯模板,快速添加和记录
-- **积分系统**: 打卡获得积分,支持手动修改
-- **金币系统**: 1积分=1金币,独立显示
+- **星星系统**: 打卡获得星星,支持手动修改
+- **金币系统**: 1星星=1金币,独立显示
 - **等级系统**: 20个等级称号,自动升级
 - **打卡记录**: 日历视图查看历史记录
 - **照片上传**: 支持拍照记录打卡证据(最多9张)
@@ -178,7 +178,7 @@ wx.cloud.init({
   familyId: string,    // 家庭ID
   name: string,        // 孩子姓名
   avatar: string,      // 头像URL
-  points: number,      // 总积分
+  points: number,      // 总星星
   coins: number,       // 金币
   level: number,       // 等级
   createTime: Date,
@@ -196,7 +196,7 @@ wx.cloud.init({
   icon: string,        // 图标
   category: string,    // 分类
   categoryColor: string, // 分类颜色
-  points: number,      // 积分
+  points: number,      // 星星
   order: number,       // 排序
   isActive: boolean,   // 是否激活
   createTime: Date
@@ -210,8 +210,8 @@ wx.cloud.init({
   childId: string,     // 孩子ID
   habitId: string,     // 习惯ID
   date: string,        // 日期 YYYY-MM-DD
-  points: number,      // 获得积分(实际)
-  habitPoints: number, // 习惯设置的积分值
+  points: number,      // 获得星星(实际)
+  habitPoints: number, // 习惯设置的星星值
   coins: number,      // 获得金币
   photos: Array,       // 照片URL数组
   remark: string,      // 备注
@@ -275,9 +275,9 @@ chore: 构建/工具链
 - [ ] 多孩子管理(添加/编辑/删除/切换)
 - [ ] 习惯模板选择和添加
 - [ ] 习惯管理(编辑/删除/排序)
-- [ ] 打卡功能(积分修改/照片上传/备注)
+- [ ] 打卡功能(星星修改/照片上传/备注)
 - [ ] 今日重复打卡检查
-- [ ] 积分和金币自动增加
+- [ ] 星星和金币自动增加
 - [ ] 等级自动计算和升级
 - [ ] 打卡历史查看
 - [ ] 日历视图切换

@@ -55,7 +55,7 @@ user_roles:      user_id, role_id                     -- 用户-角色 M:N
 role_permissions: role_id, permission_id              -- 角色-权限 M:N
 ```
 
-### 积分/钱包系统
+### 星星/钱包系统
 ```sql
 -- 账户余额（单行记录，乐观锁控制并发）
 wallets: id, user_id, balance DECIMAL(18,2), version INT, updated_at

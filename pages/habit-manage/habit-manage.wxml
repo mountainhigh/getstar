@@ -21,7 +21,7 @@
         <view class="habit-info">
           <text class="habit-name">{{item.name}}</text>
           <view class="habit-meta">
-            <text class="habit-points">{{item.points}}积分</text>
+            <text class="habit-points">{{item.points}}星星</text>
             <text class="habit-category">{{item.category}}</text>
           </view>
         </view>
@@ -37,7 +37,7 @@
           <text>✎</text>
         </button>
         <button class="btn-action btn-delete" bindtap="deleteHabit" data-id="{{item._id}}">
-          <text>✕</text>
+          <text>X</text>
         </button>
       </view>
     </view>
@@ -78,7 +78,7 @@
     </view>
     
     <view class="form-item">
-      <text class="form-label">积分</text>
+      <text class="form-label">星星</text>
       <view class="points-wrapper">
         <button class="btn-minus" bindtap="adjustPoints" data-delta="-1">-</button>
         <view class="points-display-wrapper">

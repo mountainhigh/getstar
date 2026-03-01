@@ -180,7 +180,7 @@ Page({
     }
     
     if (points <= 0) {
-      showToast('积分必须大于0');
+      showToast('星星必须大于0');
       return;
     }
     
@@ -209,7 +209,7 @@ Page({
   },
 
   /**
-   * 调整积分
+   * 调整星星
    */
   adjustPoints(e) {
     const delta = parseInt(e.currentTarget.dataset.delta);

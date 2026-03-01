@@ -402,7 +402,7 @@ Page({
 
     wx.showModal({
       title: '确认撤销',
-      content: '撤销后将扣除对应的积分和金币，确定要撤销吗？',
+      content: '撤销后将扣除对应的星星和金币，确定要撤销吗？',
       confirmText: '确定撤销',
       confirmColor: '#FF6B6B',
       success: res => {

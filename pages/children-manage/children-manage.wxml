@@ -57,7 +57,7 @@
             <view class="child-stats">
               <view class="stat-item">
                 <text class="stat-value">{{item.points}}</text>
-                <text class="stat-label">积分</text>
+                <text class="stat-label">星星</text>
               </view>
               <view class="stat-divider"></view>
               <view class="stat-item">

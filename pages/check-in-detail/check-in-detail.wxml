@@ -12,10 +12,10 @@
     </view>
   </view>
 
-  <!-- 积分修改 -->
+  <!-- 星星修改 -->
   <view class="points-modify card">
     <view class="section-title">
-      <text>本次积分</text>
+      <text>本次星星</text>
       <text class="tips">(可调整)</text>
     </view>
     <view class="points-input-wrapper">
@@ -34,7 +34,7 @@
     </view>
     <view class="points-hint">
       <text class="hint-icon">💡</text>
-      <text class="hint-text">默认使用习惯设置的积分值</text>
+      <text class="hint-text">默认使用习惯设置的星星值</text>
     </view>
   </view>
 

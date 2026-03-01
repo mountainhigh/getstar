@@ -175,7 +175,7 @@
    - 运行初始化云函数导入数据
 
 2. **部署其他云函数** (如需要)
-   - `getLeaderboard` - 积分排行榜
+   - `getLeaderboard` - 星星排行榜
    - `undoCheckIn` - 撤销打卡
    - `getRewardList` - 获取礼物列表
    - `exchangeReward` - 礼物兑换

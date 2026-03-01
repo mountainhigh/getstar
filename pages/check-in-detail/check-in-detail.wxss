@@ -59,7 +59,7 @@
   font-weight: 700;
 }
 
-/* 积分修改 */
+/* 星星修改 */
 .points-modify {
   margin-bottom: 30rpx;
 }
@@ -115,7 +115,7 @@
   z-index: 1;
 }
 
-/* 积分调整按钮 - 使用更具体的选择器确保覆盖全局样式 */
+/* 星星调整按钮 - 使用更具体的选择器确保覆盖全局样式 */
 .points-input-wrapper .btn-minus,
 .points-input-wrapper .btn-plus {
   width: 80rpx !important;

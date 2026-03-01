@@ -59,7 +59,7 @@ exports.main = async (event, context) => {
       };
     }
 
-    // 为每个孩子计算积分
+    // 为每个孩子计算星星
     const leaderboard = [];
 
     for (const child of childrenRes.data) {
@@ -69,7 +69,7 @@ exports.main = async (event, context) => {
         createTime: _.gte(startDate)
       }).get();
 
-      // 计算总积分
+      // 计算总星星
       const totalPoints = checkInRes.data.reduce((sum, record) => {
         return sum + (record.points || 0);
       }, 0);
@@ -91,7 +91,7 @@ exports.main = async (event, context) => {
       });
     }
 
-    // 按积分降序排序
+    // 按星星降序排序
     leaderboard.sort((a, b) => b.totalPoints - a.totalPoints);
 
     // 分配排名

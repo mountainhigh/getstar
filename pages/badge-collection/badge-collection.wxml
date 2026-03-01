@@ -114,7 +114,7 @@
             <text class="detail-value">{{selectedBadge.condition}}</text>
           </view>
           <view class="detail-item">
-            <text class="detail-label">所需积分</text>
+            <text class="detail-label">所需星星</text>
             <text class="detail-value">{{selectedBadge.pointsRequired}}</text>
           </view>
         </view>

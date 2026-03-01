@@ -52,7 +52,7 @@ Page({
   },
 
   /**
-   * 调整积分
+   * 调整星星
    */
   adjustPoints(e) {
     const delta = parseInt(e.currentTarget.dataset.delta);
@@ -61,7 +61,7 @@ Page({
   },
 
   /**
-   * 积分输入
+   * 星星输入
    */
   onPointsInput(e) {
     const value = parseInt(e.detail.value);
@@ -194,7 +194,7 @@ Page({
           points: points,
           photos: photos,
           remark: remark,
-          habitPoints: habit.points // 记录习惯设置的积分值
+          habitPoints: habit.points // 记录习惯设置的星星值
         }
       });
 

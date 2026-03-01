@@ -97,12 +97,8 @@
 }
 
 .habit-actions .btn-action {
-  width: 48rpx !important;
-  height: 48rpx !important;
-  min-width: 48rpx !important;
-  max-width: 48rpx !important;
-  min-height: 48rpx !important;
-  max-height: 48rpx !important;
+  width: 60rpx !important;
+  height: 60rpx !important;
   margin: 0 !important;
   padding: 0 !important;
   padding-left: 0 !important;
@@ -242,7 +238,7 @@
   gap: 16rpx;
 }
 
-/* 积分调整按钮 - 使用更具体的选择器确保覆盖全局样式 */
+/* 星星调整按钮 - 使用更具体的选择器确保覆盖全局样式 */
 .points-wrapper .btn-minus,
 .points-wrapper .btn-plus {
   width: 60rpx !important;
@@ -250,16 +246,24 @@
   border-radius: 50% !important;
   background: #F8F9FA !important;
   border: 2rpx solid #E8ECEF !important;
-  font-size: 18px !important;
+  font-size: 50rpx !important;
   font-weight: 600 !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   justify-content: center !important;
   transition: all 0.3s ease !important;
   padding: 0 !important;
   margin: 0 !important;
   line-height: 1 !important;
   box-sizing: border-box !important;
+  text-align: center !important;
+  padding-top: 0rpx !important;
+}
+
+/* 覆盖微信小程序button组件的默认样式 */
+.points-wrapper .btn-minus::after,
+.points-wrapper .btn-plus::after {
+  border: none !important;
 }
 
 .points-wrapper .btn-minus:active,

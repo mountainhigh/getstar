@@ -100,7 +100,7 @@ Page({
   // 分享排行榜
   onShareAppMessage() {
     return {
-      title: '查看我们的积分排行榜',
+      title: '查看我们的星星排行榜',
       path: '/pages/leaderboard/leaderboard'
     }
   }

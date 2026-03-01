@@ -26,7 +26,7 @@
       </view>
       <view class="template-info">
         <text class="template-name">{{item.name}}</text>
-        <text class="template-points">{{item.points}}积分</text>
+        <text class="template-points">{{item.points}}星星</text>
       </view>
       <view class="template-check">
         <text class="check-icon">{{item.selected ? '✓' : '+'}}</text>

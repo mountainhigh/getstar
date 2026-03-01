@@ -102,9 +102,9 @@ exports.main = async (event, context) => {
       }
     }
 
-    // 7. 更新孩子积分（可选：解锁称号也可以获得积分）
+    // 7. 更新孩子星星（可选：解锁称号也可以获得星星）
     if (unlockedBadges.length > 0) {
-      const pointsToAdd = unlockedBadges.length * 50; // 每解锁一个称号获得50积分
+      const pointsToAdd = unlockedBadges.length * 50; // 每解锁一个称号获得50星星
       await db.collection('children').doc(childId).update({
         data: {
           points: _.inc(pointsToAdd),

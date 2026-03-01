@@ -110,9 +110,9 @@ exports.main = async (event, context) => {
     const oldLevel = child.level;
     const oldPoints = child.points;
     
-    // 计算新积分和金币
+    // 计算新星星和金币
     const newPoints = oldPoints + points;
-    const newCoins = (child.coins || 0) + points; // 1积分 = 1金币
+    const newCoins = (child.coins || 0) + points; // 1星星 = 1金币
     
     // 计算新等级
     const newLevelInfo = calculateLevel(newPoints);

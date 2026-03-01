@@ -50,7 +50,7 @@
       <text class="stat-icon">⭐</text>
       <view class="stat-info">
         <text class="stat-value">{{stats.totalPoints}}</text>
-        <text class="stat-label">获得积分</text>
+        <text class="stat-label">获得星星</text>
       </view>
     </view>
 
@@ -96,10 +96,10 @@
     </view>
   </view>
 
-  <!-- 积分趋势图 -->
+  <!-- 星星趋势图 -->
   <view class="section">
     <view class="section-header">
-      <text class="section-title">积分趋势</text>
+      <text class="section-title">星星趋势</text>
     </view>
     <view class="chart-container">
       <view class="chart">

@@ -146,7 +146,7 @@ Page({
       // 习惯统计
       const habitStats = await this.calculateHabitStats(checkIns)
 
-      // 积分趋势
+      // 星星趋势
       const pointsTrend = await this.calculatePointsTrend(currentChildId, currentPeriod)
 
       // 热力图数据
@@ -251,7 +251,7 @@ Page({
     return habitStats
   },
 
-  // 计算积分趋势
+  // 计算星星趋势
   async calculatePointsTrend(childId, period) {
     const db = wx.cloud.database()
     const trend = []

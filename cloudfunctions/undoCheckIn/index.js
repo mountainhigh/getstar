@@ -69,7 +69,7 @@ exports.main = async (event, context) => {
       };
     }
 
-    // 查询孩子当前积分
+    // 查询孩子当前星星
     const currentChildRes = await db.collection('children').doc(checkInRecord.childId).get();
 
     if (!currentChildRes.data) {
@@ -85,11 +85,11 @@ exports.main = async (event, context) => {
     if (currentPoints < pointsToDeduct) {
       return {
         success: false,
-        message: '积分不足，无法撤销'
+        message: '星星不足，无法撤销'
       };
     }
 
-    // 扣减积分
+    // 扣减星星
     await db.collection('children').doc(checkInRecord.childId).update({
       data: {
         points: _.inc(-pointsToDeduct),

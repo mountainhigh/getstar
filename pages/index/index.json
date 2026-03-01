@@ -1,5 +1,5 @@
 {
   "navigationBarTitleText": "打卡",
-  "enablePullDownRefresh": true,
+  "enablePullDownRefresh": false,
   "backgroundColor": "#F7F9FC"
 }

@@ -281,7 +281,7 @@
 .action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 50rpx;
 }
 
 .btn-delete-icon {
