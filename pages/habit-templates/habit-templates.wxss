@@ -1,0 +1,172 @@
+/* 分类筛选 */
+.category-scroll {
+  margin-bottom: 30rpx;
+}
+
+.category-list {
+  white-space: nowrap;
+  padding: 0 20rpx;
+}
+
+.category-item {
+  display: inline-block;
+  padding: 16rpx 32rpx;
+  margin-right: 16rpx;
+  background: #FFFFFF;
+  border-radius: 50rpx;
+  font-size: 15px;
+  color: #636E72;
+  border: 2rpx solid #E8ECEF;
+  transition: all 0.3s ease;
+}
+
+.category-item.active {
+  background: #FF6B6B;
+  color: #FFFFFF;
+  border-color: #FF6B6B;
+}
+
+/* 模板列表 */
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  padding: 0 20rpx;
+}
+
+.template-item {
+  display: flex;
+  flex-direction: column;
+  padding: 30rpx;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.template-item:active {
+  transform: scale(0.98);
+}
+
+.template-item.selected {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #FFFFFF;
+}
+
+.template-item.selected .template-name {
+  color: #FFFFFF;
+}
+
+.template-item.selected .template-points {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.template-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin-bottom: 20rpx;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.template-item.selected .template-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.template-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.template-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2D3436;
+  margin-bottom: 12rpx;
+}
+
+.template-points {
+  font-size: 14px;
+  color: #FF6B6B;
+  font-weight: 500;
+}
+
+.template-check {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: #F8F9FA;
+  border: 2rpx solid #E8ECEF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.template-item.selected .template-check {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.check-icon {
+  font-size: 24px;
+  font-weight: 700;
+  color: #95A5A6;
+}
+
+.template-item.selected .check-icon {
+  color: #FFFFFF;
+}
+
+/* 底部按钮 */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.footer-info {
+  flex: 1;
+  font-size: 15px;
+  color: #2D3436;
+}
+
+.btn-add {
+  height: 80rpx;
+  padding: 0 48rpx;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  border-radius: 50rpx;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 8rpx 20rpx rgba(255, 107, 107, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-add:active {
+  transform: scale(0.98);
+}
+
+/* 额外底部间距 */
+.container {
+  padding-bottom: 180rpx;
+  padding-top: 20rpx;
+}

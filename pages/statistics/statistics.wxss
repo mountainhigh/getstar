@@ -1,0 +1,354 @@
+/* 统计页面样式 */
+.statistics {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 时间选择器 */
+.time-selector {
+  display: flex;
+  background: #fff;
+  padding: 20rpx;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.time-tab {
+  flex: 1;
+  padding: 20rpx;
+  text-align: center;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #666;
+  background: #f5f5f5;
+  transition: all 0.3s;
+}
+
+.time-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 孩子选择器 */
+.child-selector {
+  background: #fff;
+  margin-top: 20rpx;
+  padding: 20rpx;
+}
+
+.picker-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  padding: 16rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+}
+
+.child-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.picker-arrow {
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 统计卡片 */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  padding: 20rpx;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.stat-card.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.stat-card.success {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: #fff;
+}
+
+.stat-card.warning {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: #fff;
+}
+
+.stat-card.info {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: #fff;
+}
+
+.stat-icon {
+  font-size: 48rpx;
+  opacity: 0.9;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+/* 区块 */
+.section {
+  background: #fff;
+  margin: 20rpx;
+  padding: 30rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 习惯统计 */
+.habit-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.habit-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.habit-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.habit-icon {
+  font-size: 36rpx;
+}
+
+.habit-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.habit-count {
+  font-size: 28rpx;
+  color: #999;
+  font-weight: bold;
+}
+
+.habit-progress {
+  height: 12rpx;
+  background: #f5f5f5;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 6rpx;
+  transition: width 0.5s ease;
+}
+
+/* 积分趋势图 */
+.chart-container {
+  min-height: 400rpx;
+}
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8rpx;
+  height: 300rpx;
+  padding-bottom: 40rpx;
+  border-bottom: 2rpx solid #eee;
+}
+
+.chart-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 20rpx;
+  position: relative;
+}
+
+.bar-fill {
+  width: 100%;
+  min-height: 8rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4rpx 4rpx 0 0;
+}
+
+.bar-label {
+  position: absolute;
+  bottom: -35rpx;
+  font-size: 20rpx;
+  color: #999;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  white-space: nowrap;
+}
+
+.bar-value {
+  position: absolute;
+  top: -25rpx;
+  font-size: 20rpx;
+  color: #666;
+  font-weight: bold;
+}
+
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300rpx;
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+}
+
+/* 打卡热力图 */
+.heatmap-container {
+  padding: 20rpx 0;
+}
+
+.heatmap-weekdays {
+  display: flex;
+  flex-direction: column;
+  gap: 42rpx;
+  margin-bottom: 10rpx;
+  margin-left: 10rpx;
+}
+
+.heatmap-label {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6rpx;
+  margin-bottom: 20rpx;
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+}
+
+.cell {
+  width: 100%;
+  height: 100%;
+  border-radius: 4rpx;
+  background: #eee;
+}
+
+.cell.level-0 {
+  background: #eee;
+}
+
+.cell.level-1 {
+  background: #c6e48b;
+}
+
+.cell.level-2 {
+  background: #7bc96f;
+}
+
+.cell.level-3 {
+  background: #239a3b;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.legend-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 3rpx;
+}
+
+.legend-dot.level-0 {
+  background: #eee;
+}
+
+.legend-dot.level-1 {
+  background: #c6e48b;
+}
+
+.legend-dot.level-2 {
+  background: #7bc96f;
+}
+
+.legend-dot.level-3 {
+  background: #239a3b;
+}
+
+.legend-text {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 加载状态 */
+.loading {
+  text-align: center;
+  padding: 100rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}

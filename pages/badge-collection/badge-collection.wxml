@@ -1,0 +1,164 @@
+<view class="container">
+  <!-- 头部统计 -->
+  <view class="header-section">
+    <view class="stats-card">
+      <view class="stat-item">
+        <text class="stat-value">{{collectedCount}}/8</text>
+        <text class="stat-label">已收集</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{currentBadge.name}}</text>
+        <text class="stat-label">当前称号</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类标签 -->
+  <view class="category-tabs">
+    <view 
+      class="tab-item {{currentCategory === 'all' ? 'active' : ''}}"
+      bindtap="switchCategory"
+      data-category="all">
+      <text>全部</text>
+    </view>
+    <view 
+      class="tab-item {{currentCategory === 'collected' ? 'active' : ''}}"
+      bindtap="switchCategory"
+      data-category="collected">
+      <text>已获得</text>
+    </view>
+    <view 
+      class="tab-item {{currentCategory === 'progress' ? 'active' : ''}}"
+      bindtap="switchCategory"
+      data-category="progress">
+      <text>进度</text>
+    </view>
+    <view 
+      class="tab-item {{currentCategory === 'consistency' ? 'active' : ''}}"
+      bindtap="switchCategory"
+      data-category="consistency">
+      <text>坚持</text>
+    </view>
+  </view>
+
+  <!-- 称号列表 -->
+  <view class="badges-grid">
+    <view 
+      class="badge-card {{badge.unlocked ? 'unlocked' : ''}} {{badge.isWearing ? 'wearing' : ''}}"
+      wx:for="{{filteredBadges}}"
+      wx:key="id"
+      bindtap="onBadgeTap"
+      data-badge="{{item}}"
+      animation="{{badge.animation}}">
+      
+      <!-- 锁定状态覆盖层 -->
+      <view class="lock-overlay" wx:if="{{!badge.unlocked}}">
+        <text class="lock-icon">🔒</text>
+      </view>
+
+      <!-- 稀有度标签 -->
+      <view class="rarity-badge {{badge.rarity}}">
+        <text class="rarity-text">{{rarityLabels[badge.rarity]}}</text>
+      </view>
+
+      <!-- 称号图标 -->
+      <view class="badge-icon-wrapper" style="background: {{badge.color}};">
+        <text class="badge-icon">{{badge.icon}}</text>
+      </view>
+
+      <!-- 称号信息 -->
+      <view class="badge-info">
+        <text class="badge-name">{{badge.unlocked ? badge.name : '???'}}</text>
+        <text class="badge-desc">{{badge.unlocked ? badge.description : badge.condition}}</text>
+        
+        <!-- 进度条 -->
+        <view class="progress-bar" wx:if="{{!badge.unlocked && badge.progress >= 0}}">
+          <view class="progress-fill" style="width: {{badge.progress}}%;"></view>
+          <text class="progress-text">{{badge.progress}}%</text>
+        </view>
+
+        <!-- 佩戴标识 -->
+        <view class="wearing-tag" wx:if="{{badge.isWearing}}">
+          <text>佩戴中</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 称号详情弹窗 -->
+  <view class="modal {{showDetail ? 'show' : ''}}" bindtap="closeDetail">
+    <view class="modal-content" catchtap="stopPropagation" wx:if="{{selectedBadge}}">
+      <view class="modal-header">
+        <text class="modal-title">{{selectedBadge.name}}</text>
+        <text class="modal-close" bindtap="closeDetail">×</text>
+      </view>
+      
+      <view class="modal-body">
+        <view class="badge-display">
+          <view class="badge-large" style="background: {{selectedBadge.color}};">
+            <text class="badge-large-icon">{{selectedBadge.icon}}</text>
+          </view>
+          <view class="rarity-badge large {{selectedBadge.rarity}}">
+            <text>{{rarityLabels[selectedBadge.rarity]}}</text>
+          </view>
+        </view>
+
+        <view class="badge-detail-info">
+          <view class="detail-item">
+            <text class="detail-label">描述</text>
+            <text class="detail-value">{{selectedBadge.description}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">解锁条件</text>
+            <text class="detail-value">{{selectedBadge.condition}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">所需积分</text>
+            <text class="detail-value">{{selectedBadge.pointsRequired}}</text>
+          </view>
+        </view>
+
+        <view class="progress-section" wx:if="{{!selectedBadge.unlocked}}">
+          <text class="progress-label">解锁进度</text>
+          <view class="progress-bar-large">
+            <view class="progress-fill-large" style="width: {{selectedBadge.progress}}%; background: {{selectedBadge.color}};"></view>
+          </view>
+          <text class="progress-hint">{{progressHint}}</text>
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <button 
+          class="action-btn {{selectedBadge.unlocked && !selectedBadge.isWearing ? 'primary' : ''}}"
+          wx:if="{{selectedBadge.unlocked}}"
+          bindtap="wearBadge">
+          {{selectedBadge.isWearing ? '取消佩戴' : '佩戴称号'}}
+        </button>
+        <button 
+          class="action-btn disabled"
+          wx:else>
+          未解锁
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 解锁动画弹窗 -->
+  <view class="unlock-modal {{showUnlock ? 'show' : ''}}" wx:if="{{newUnlockedBadge}}">
+    <view class="unlock-animation">
+      <view class="unlock-badge-wrapper" style="background: {{newUnlockedBadge.color}};">
+        <text class="unlock-badge-icon">{{newUnlockedBadge.icon}}</text>
+      </view>
+      <view class="unlock-stars">
+        <text class="star">⭐</text>
+        <text class="star">⭐</text>
+        <text class="star">⭐</text>
+      </view>
+      <text class="unlock-title">解锁新称号!</text>
+      <text class="unlock-name">{{newUnlockedBadge.name}}</text>
+      <text class="unlock-desc">{{newUnlockedBadge.description}}</text>
+      <button class="confirm-btn" bindtap="closeUnlock">太棒了!</button>
+    </view>
+  </view>
+</view>

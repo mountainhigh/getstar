@@ -1,0 +1,136 @@
+/* 全局样式 */
+@import 'styles/theme.wxss';
+
+page {
+  background-color: #F7F9FC;
+  font-family: 'PingFang SC', 'Nunito Sans', sans-serif;
+  color: #2D3436;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* 通用容器 */
+.container {
+  min-height: 100vh;
+  padding: 20rpx;
+}
+
+/* 卡片样式 */
+.card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 按钮样式 */
+.btn {
+  border-radius: 50rpx;
+  padding: 24rpx 48rpx;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #FFFFFF;
+  box-shadow: 0 8rpx 20rpx rgba(255, 107, 107, 0.3);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 10rpx rgba(255, 107, 107, 0.3);
+}
+
+.btn-secondary {
+  background: #4ECDC4;
+  color: #FFFFFF;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2rpx solid #FF6B6B;
+  color: #FF6B6B;
+}
+
+/* 输入框样式 */
+.input {
+  background: #F8F9FA;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 15px;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.input:focus {
+  border-color: #FF6B6B;
+  background: #FFFFFF;
+}
+
+/* 文本样式 */
+.text-primary {
+  color: #FF6B6B;
+}
+
+.text-secondary {
+  color: #4ECDC4;
+}
+
+.text-muted {
+  color: #95A5A6;
+}
+
+.text-large {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.text-small {
+  font-size: 12px;
+}
+
+/* flex布局 */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 间距 */
+.mt-10 { margin-top: 10rpx; }
+.mt-20 { margin-top: 20rpx; }
+.mt-30 { margin-top: 30rpx; }
+.mb-10 { margin-bottom: 10rpx; }
+.mb-20 { margin-bottom: 20rpx; }
+.mb-30 { margin-bottom: 30rpx; }
+.ml-10 { margin-left: 10rpx; }
+.mr-10 { margin-right: 10rpx; }
+.p-20 { padding: 20rpx; }
+.p-30 { padding: 30rpx; }
+
+/* 圆角 */
+.rounded-lg { border-radius: 20rpx; }
+.rounded-full { border-radius: 50%; }
+
+/* 阴影 */
+.shadow { box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05); }
+.shadow-lg { box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.1); }

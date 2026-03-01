@@ -1,0 +1,158 @@
+/* 兑换记录页面 */
+.exchange-history {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 时间选择器 */
+.time-selector {
+  display: flex;
+  background: #fff;
+  padding: 20rpx;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.time-tab {
+  flex: 1;
+  padding: 20rpx;
+  text-align: center;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #666;
+  background: #f5f5f5;
+  transition: all 0.3s;
+}
+
+.time-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 兑换记录列表 */
+.exchange-list {
+  padding: 20rpx;
+}
+
+.date-group {
+  margin-bottom: 30rpx;
+}
+
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10rpx 20rpx;
+}
+
+.date-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.date-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.exchange-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.exchange-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.exchange-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.exchange-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.exchange-meta {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.exchange-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.exchange-cost {
+  font-size: 26rpx;
+  color: #f5a623;
+  font-weight: bold;
+}
+
+.exchange-status {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.exchange-status.pending {
+  background: #FFF3CD;
+  color: #FFA500;
+}
+
+.exchange-status.completed {
+  background: #D4EDDA;
+  color: #28A745;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 加载状态 */
+.loading {
+  text-align: center;
+  padding: 100rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}

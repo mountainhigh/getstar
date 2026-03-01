@@ -1,0 +1,64 @@
+<!-- 排行榜页面 -->
+<view class="leaderboard-container">
+  <!-- 标题栏 -->
+  <view class="header">
+    <text class="title">积分排行榜</text>
+  </view>
+
+  <!-- 时间筛选 -->
+  <view class="filter-bar">
+    <view class="filter-item {{period === 'week' ? 'active' : ''}}" bindtap="switchPeriod" data-period="week">
+      <text>本周</text>
+    </view>
+    <view class="filter-item {{period === 'month' ? 'active' : ''}}" bindtap="switchPeriod" data-period="month">
+      <text>本月</text>
+    </view>
+    <view class="filter-item {{period === 'total' ? 'active' : ''}}" bindtap="switchPeriod" data-period="total">
+      <text>总榜</text>
+    </view>
+  </view>
+
+  <!-- 排行榜列表 -->
+  <view class="leaderboard-list">
+    <view wx:if="{{leaderboard.length === 0}}" class="empty-state">
+      <text class="empty-text">暂无数据</text>
+    </view>
+
+    <view wx:for="{{leaderboard}}" wx:key="childId" class="leaderboard-item">
+      <!-- 前三名特殊标识 -->
+      <view wx:if="{{item.rank <= 3}}" class="rank-badge rank-{{item.rank}}">
+        <text class="rank-number">{{item.rank}}</text>
+      </view>
+      <view wx:else class="rank-badge rank-normal">
+        <text class="rank-number">{{item.rank}}</text>
+      </view>
+
+      <!-- 头像和名字 -->
+      <view class="child-info">
+        <image class="avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+        <text class="name">{{item.childName}}</text>
+      </view>
+
+      <!-- 数据信息 -->
+      <view class="stats">
+        <view class="stat-item">
+          <text class="stat-label">积分</text>
+          <text class="stat-value points">{{item.totalPoints}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">打卡</text>
+          <text class="stat-value">{{item.checkInCount}}次</text>
+        </view>
+        <view wx:if="{{item.consecutiveDays > 0}}" class="stat-item">
+          <text class="stat-label">连续</text>
+          <text class="stat-value consecutive">{{item.consecutiveDays}}天</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="tips">
+    <text class="tips-text">💡 持续打卡可以提升排名哦！</text>
+  </view>
+</view>

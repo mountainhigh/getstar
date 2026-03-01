@@ -1,0 +1,46 @@
+<view class="container">
+  <!-- 分类筛选 -->
+  <view class="category-scroll">
+    <scroll-view scroll-x class="category-list" show-scrollbar="{{false}}">
+      <view 
+        class="category-item {{item.id === currentCategory ? 'active' : ''}}" 
+        wx:for="{{categories}}" 
+        wx:key="id"
+        bindtap="selectCategory"
+        data-id="{{item.id}}">
+        <text>{{item.name}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 模板列表 -->
+  <view class="templates-grid">
+    <view 
+      class="template-item card {{item.selected ? 'selected' : ''}}" 
+      wx:for="{{filteredTemplates}}" 
+      wx:key="id"
+      bindtap="toggleTemplate"
+      data-id="{{item.id}}">
+      <view class="template-icon" style="background: {{item.color}};">
+        <text>{{item.icon}}</text>
+      </view>
+      <view class="template-info">
+        <text class="template-name">{{item.name}}</text>
+        <text class="template-points">{{item.points}}积分</text>
+      </view>
+      <view class="template-check">
+        <text class="check-icon">{{item.selected ? '✓' : '+'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="footer" wx:if="{{selectedCount > 0}}">
+    <view class="footer-info">
+      <text>已选择 {{selectedCount}} 个习惯</text>
+    </view>
+    <button class="btn-add" bindtap="addHabits">
+      <text>添加</text>
+    </button>
+  </view>
+</view>

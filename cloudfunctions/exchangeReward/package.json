@@ -1,0 +1,9 @@
+{
+  "name": "exchangeReward",
+  "version": "1.0.0",
+  "description": "兑换礼物",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

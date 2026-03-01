@@ -1,0 +1,167 @@
+<view class="statistics">
+  <!-- 时间选择器 -->
+  <view class="time-selector">
+    <view
+      class="time-tab {{currentPeriod === 'today' ? 'active' : ''}}"
+      bindtap="switchPeriod"
+      data-period="today">
+      <text>今日</text>
+    </view>
+    <view
+      class="time-tab {{currentPeriod === 'week' ? 'active' : ''}}"
+      bindtap="switchPeriod"
+      data-period="week">
+      <text>本周</text>
+    </view>
+    <view
+      class="time-tab {{currentPeriod === 'month' ? 'active' : ''}}"
+      bindtap="switchPeriod"
+      data-period="month">
+      <text>本月</text>
+    </view>
+  </view>
+
+  <!-- 孩子选择器 -->
+  <view class="child-selector" wx:if="{{children.length > 1}}">
+    <picker
+      mode="selector"
+      range="{{children}}"
+      range-key="name"
+      bindchange="selectChild"
+      value="{{currentChildIndex}}">
+      <view class="picker-view">
+        <text class="child-name">{{children[currentChildIndex].name}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 打卡统计卡片 -->
+  <view class="stats-cards">
+    <view class="stat-card primary">
+      <text class="stat-icon">✓</text>
+      <view class="stat-info">
+        <text class="stat-value">{{stats.checkInCount}}</text>
+        <text class="stat-label">打卡次数</text>
+      </view>
+    </view>
+
+    <view class="stat-card success">
+      <text class="stat-icon">⭐</text>
+      <view class="stat-info">
+        <text class="stat-value">{{stats.totalPoints}}</text>
+        <text class="stat-label">获得积分</text>
+      </view>
+    </view>
+
+    <view class="stat-card warning">
+      <text class="stat-icon">💰</text>
+      <view class="stat-info">
+        <text class="stat-value">{{stats.totalCoins}}</text>
+        <text class="stat-label">获得金币</text>
+      </view>
+    </view>
+
+    <view class="stat-card info">
+      <text class="stat-icon">🔥</text>
+      <view class="stat-info">
+        <text class="stat-value">{{stats.maxStreak}}天</text>
+        <text class="stat-label">最长连续</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 习惯打卡分布 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">习惯打卡分布</text>
+    </view>
+    <view class="habit-stats">
+      <view
+        class="habit-stat-item"
+        wx:for="{{habitStats}}"
+        wx:key="_id">
+        <view class="habit-header">
+          <text class="habit-icon">{{item.icon}}</text>
+          <text class="habit-name">{{item.name}}</text>
+          <text class="habit-count">{{item.count}}次</text>
+        </view>
+        <view class="habit-progress">
+          <view
+            class="progress-bar"
+            style="width: {{item.percent}}%; background: {{item.color}};">
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 积分趋势图 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">积分趋势</text>
+    </view>
+    <view class="chart-container">
+      <view class="chart">
+        <view
+          class="chart-bar"
+          wx:for="{{pointsTrend}}"
+          wx:key="date"
+          style="height: {{item.percent}}%;">
+          <view class="bar-fill"></view>
+          <view class="bar-label">{{item.label}}</view>
+          <view class="bar-value">{{item.points}}</view>
+        </view>
+      </view>
+      <view class="chart-empty" wx:if="{{pointsTrend.length === 0}}">
+        <text class="empty-icon">📊</text>
+        <text class="empty-text">暂无数据</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 打卡热力图 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">打卡热力图</text>
+    </view>
+    <view class="heatmap-container">
+      <view class="heatmap-weekdays">
+        <text class="heatmap-label">一</text>
+        <text class="heatmap-label">三</text>
+        <text class="heatmap-label">五</text>
+      </view>
+      <view class="heatmap-grid">
+        <view
+          class="heatmap-cell"
+          wx:for="{{heatmapData}}"
+          wx:key="date">
+          <view class="cell {{item.level}}"></view>
+        </view>
+      </view>
+      <view class="heatmap-legend">
+        <view class="legend-item">
+          <view class="legend-dot level-0"></view>
+          <text class="legend-text">0</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot level-1"></view>
+          <text class="legend-text">1-2</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot level-2"></view>
+          <text class="legend-text">3-4</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot level-3"></view>
+          <text class="legend-text">5+</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

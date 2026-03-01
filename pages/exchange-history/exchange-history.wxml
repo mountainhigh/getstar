@@ -1,0 +1,68 @@
+<view class="exchange-history">
+  <!-- 时间选择器 -->
+  <view class="time-selector">
+    <view
+      class="time-tab {{currentTimePeriod === 'all' ? 'active' : ''}}"
+      bindtap="switchTimePeriod"
+      data-period="all">
+      <text>全部</text>
+    </view>
+    <view
+      class="time-tab {{currentTimePeriod === 'week' ? 'active' : ''}}"
+      bindtap="switchTimePeriod"
+      data-period="week">
+      <text>本周</text>
+    </view>
+    <view
+      class="time-tab {{currentTimePeriod === 'month' ? 'active' : ''}}"
+      bindtap="switchTimePeriod"
+      data-period="month">
+      <text>本月</text>
+    </view>
+  </view>
+
+  <!-- 兑换记录列表 -->
+  <view class="exchange-list">
+    <!-- 按日期分组 -->
+    <view class="date-group" wx:for="{{groupedHistory}}" wx:key="date">
+      <view class="date-header">
+        <text class="date-text">{{item.date}}</text>
+        <text class="date-count">{{item.records.length}}条</text>
+      </view>
+
+      <view
+        class="exchange-item card"
+        wx:for="{{item.records}}"
+        wx:for-item="record"
+        wx:key="_id"
+        bindlongpress="onLongPressRecord"
+        data-id="{{record._id}}">
+        <view class="exchange-icon">
+          <text>{{record.rewardIcon}}</text>
+        </view>
+        <view class="exchange-info">
+          <text class="exchange-name">{{record.rewardName}}</text>
+          <view class="exchange-meta">
+            <text class="exchange-time">{{record.time}}</text>
+            <text class="exchange-cost">💰 {{record.cost}} 金币</text>
+          </view>
+        </view>
+        <view
+          class="exchange-status {{record.status}}">
+          <text>{{record.statusText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{exchangeList.length === 0 && !loading}}">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">还没有兑换记录</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

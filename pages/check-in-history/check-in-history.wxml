@@ -1,0 +1,106 @@
+<view class="container">
+  <!-- 日历选择器 -->
+  <view class="calendar-section">
+    <view class="calendar-header">
+      <button class="btn-nav" bindtap="changeMonth" data-direction="prev">
+        <text>‹</text>
+      </button>
+      <text class="current-month">{{currentYear}}年{{currentMonth}}月</text>
+      <button class="btn-nav" bindtap="changeMonth" data-direction="next" wx:if="{{!isCurrentMonth}}">
+        <text>›</text>
+      </button>
+    </view>
+    
+    <view class="calendar-weekdays">
+      <text class="weekday" wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+    </view>
+    
+    <view class="calendar-days">
+      <view 
+        class="day-item {{item.isOtherMonth ? 'other-month' : ''}} {{item.isToday ? 'today' : ''}} {{item.hasCheckIn ? 'has-checkin' : ''}} {{item.isSelected ? 'selected' : ''}}" 
+        wx:for="{{calendarDays}}" 
+        wx:key="date"
+        bindtap="selectDate"
+        data-date="{{item.date}}">
+        <text class="day-number">{{item.day}}</text>
+        <text class="day-dot" wx:if="{{item.hasCheckIn}}"></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <text class="stat-value">{{monthStats.checkInCount}}</text>
+      <text class="stat-label">打卡次数</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{monthStats.totalPoints}}</text>
+      <text class="stat-label">获得积分</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{monthStats.totalCoins}}</text>
+      <text class="stat-label">获得金币</text>
+    </view>
+  </view>
+
+  <!-- 导出按钮 -->
+  <view class="export-section">
+    <button class="export-btn" bindtap="exportData" loading="{{exporting}}">
+      <text>📊 导出数据</text>
+    </button>
+  </view>
+
+  <!-- 打卡记录列表 -->
+  <view class="history-section">
+    <view class="section-header">
+      <text class="section-title">{{selectedDateStr}} 打卡记录</text>
+      <text class="section-count">{{checkInList.length}}条</text>
+    </view>
+    
+    <view class="history-list">
+      <view 
+        class="history-item card {{item.canUndo ? 'can-undo' : ''}}" 
+        wx:for="{{checkInList}}" 
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindlongpress="onLongPressHistory">
+        <view class="history-icon" style="background: {{item.habitColor}};">
+          <text>{{item.habitIcon}}</text>
+        </view>
+        <view class="history-info">
+          <text class="history-name">{{item.habitName}}</text>
+          <text class="history-remark" wx:if="{{item.remark}}">{{item.remark}}</text>
+          <view class="history-meta">
+            <text class="history-time">{{item.time}}</text>
+            <text class="history-points">+{{item.points}}积分</text>
+          </view>
+        </view>
+        <view class="history-photos" wx:if="{{item.photos.length > 0}}">
+          <image 
+            class="photo-thumb" 
+            src="{{item.photos[0]}}" 
+            mode="aspectFill"
+            bindtap="previewPhotos"
+            data-photos="{{item.photos}}"
+            data-current="{{item.photos[0]}}">
+          </image>
+          <view class="photo-count" wx:if="{{item.photos.length > 1}}">
+            <text>+{{item.photos.length - 1}}</text>
+          </view>
+        </view>
+        <view class="undo-btn" wx:if="{{item.canUndo}}" catchtap="undoCheckIn" data-id="{{item._id}}">
+          <text>撤销</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{checkInList.length === 0}}">
+        <text class="empty-icon">📅</text>
+        <text class="empty-text">当天没有打卡记录</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,86 @@
+<view class="container">
+  <!-- 习惯信息卡片 -->
+  <view class="habit-info card" wx:if="{{habit}}">
+    <view class="habit-header">
+      <view class="habit-icon" style="background: {{habit.categoryColor}};">
+        <text>{{habit.icon}}</text>
+      </view>
+      <view class="habit-details">
+        <text class="habit-name">{{habit.name}}</text>
+        <text class="habit-category">{{habit.category}}</text>
+      </view>
+    </view>
+    <view class="habit-points">
+      <text class="points-label">获得积分</text>
+      <text class="points-value">{{habit.points}}</text>
+    </view>
+  </view>
+
+  <!-- 积分修改 -->
+  <view class="points-modify card">
+    <view class="section-title">
+      <text>修改积分</text>
+      <text class="tips">(可选)</text>
+    </view>
+    <view class="points-input-wrapper">
+      <button class="btn-minus" bindtap="adjustPoints" data-delta="-5">-5</button>
+      <button class="btn-minus" bindtap="adjustPoints" data-delta="-1">-1</button>
+      <input 
+        class="points-input" 
+        type="number" 
+        value="{{points}}"
+        bindinput="onPointsInput"
+      />
+      <button class="btn-plus" bindtap="adjustPoints" data-delta="1">+1</button>
+      <button class="btn-plus" bindtap="adjustPoints" data-delta="5">+5</button>
+    </view>
+    <view class="points-hint">
+      <text class="hint-icon">💡</text>
+      <text class="hint-text">默认使用习惯设置的积分值</text>
+    </view>
+  </view>
+
+  <!-- 照片上传 -->
+  <view class="photo-upload card">
+    <view class="section-title">
+      <text>拍照记录</text>
+      <text class="photo-count">{{photos.length}}/9</text>
+    </view>
+    <view class="photo-grid">
+      <view class="photo-item" wx:for="{{photos}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item}}"></image>
+        <view class="photo-delete" bindtap="deletePhoto" data-index="{{index}}">
+          <text>✕</text>
+        </view>
+      </view>
+      <view class="photo-add" wx:if="{{photos.length < 9}}" bindtap="choosePhoto">
+        <text class="add-icon">+</text>
+        <text class="add-text">添加照片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="remark card">
+    <view class="section-title">
+      <text>备注</text>
+      <text class="optional">(可选)</text>
+    </view>
+    <textarea 
+      class="remark-input" 
+      placeholder="写点什么..."
+      value="{{remark}}"
+      bindinput="onRemarkInput"
+      maxlength="200"
+    ></textarea>
+    <view class="remark-count">{{remark.length}}/200</view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="footer">
+    <button class="btn-submit" bindtap="submitCheckIn">
+      <text class="btn-icon">✓</text>
+      <text>确认打卡</text>
+    </button>
+  </view>
+</view>

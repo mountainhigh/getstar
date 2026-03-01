@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Dependencies
+package-lock.json
+yarn.lock
+
+# 微信开发者工具缓存
+miniprogram_npm/
+.temp/
+.wxml_cache/
+
+# 微信小程序私有配置
+project.private.config.json
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+dist/
+build/
+*.min.js

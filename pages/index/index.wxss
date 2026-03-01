@@ -1,0 +1,421 @@
+/* 孩子切换器 */
+.child-switcher {
+  margin-bottom: 30rpx;
+}
+
+.child-scroll {
+  white-space: nowrap;
+}
+
+.child-item {
+  display: inline-flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 50rpx;
+  padding: 12rpx 20rpx;
+  margin-right: 20rpx;
+  border: 3rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.child-item.active {
+  border-color: #FF6B6B;
+  background: #FFF5F5;
+}
+
+.child-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.child-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.child-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.child-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2D3436;
+}
+
+.child-points {
+  font-size: 12px;
+  color: #FF6B6B;
+  margin-top: 4rpx;
+}
+
+/* 积分卡片 */
+.points-card {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #FFFFFF;
+  margin-bottom: 30rpx;
+}
+
+.points-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30rpx;
+}
+
+.points-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.points-value {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.points-label {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 8rpx;
+}
+
+.coins-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  padding: 16rpx 24rpx;
+}
+
+.coins-icon {
+  font-size: 24px;
+}
+
+.coins-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 8rpx 0;
+}
+
+.coins-label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* 等级进度 */
+.level-info {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50rpx;
+  padding: 16rpx 24rpx;
+}
+
+.level-bar {
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-bottom: 12rpx;
+}
+
+.level-progress {
+  height: 100%;
+  background: #FFE66D;
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.level-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+/* 称号展示 */
+.badge-display {
+  margin-top: 20rpx;
+  padding: 16rpx 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 30rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  transition: all 0.3s ease;
+}
+
+.badge-display:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.badge-icon {
+  font-size: 36rpx;
+}
+
+.badge-name {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* 习惯列表 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 0 10rpx;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2D3436;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: #95A5A6;
+}
+
+.habit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.habit-item:active {
+  transform: scale(0.98);
+}
+
+.habit-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.habit-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.habit-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.habit-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2D3436;
+  margin-bottom: 8rpx;
+}
+
+.habit-points {
+  font-size: 14px;
+  color: #FF6B6B;
+  font-weight: 500;
+}
+
+.habit-right {
+  flex-shrink: 0;
+}
+
+.check-btn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: #F8F9FA;
+  border: 3rpx solid #E8ECEF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.check-btn.checked {
+  background: #4ECDC4;
+  border-color: #4ECDC4;
+}
+
+.check-icon {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2D3436;
+}
+
+.check-btn.checked .check-icon {
+  color: #FFFFFF;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 80px;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 16px;
+  color: #95A5A6;
+}
+
+/* 提示 */
+.tips {
+  display: flex;
+  align-items: center;
+  background: #FFF9E6;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-top: 30rpx;
+}
+
+.tips-icon {
+  font-size: 20px;
+  margin-right: 12rpx;
+}
+
+.tips-text {
+  font-size: 13px;
+  color: #F39C12;
+  flex: 1;
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  padding: 48rpx;
+  width: 80%;
+  text-align: center;
+}
+
+/* 打卡成功动画 */
+.success-animation {
+  margin-bottom: 30rpx;
+}
+
+.success-icon {
+  font-size: 100px;
+  display: inline-block;
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2D3436;
+  margin-bottom: 20rpx;
+}
+
+.success-points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 18px;
+  color: #FF6B6B;
+  font-weight: 600;
+}
+
+.success-points .coins {
+  color: #F39C12;
+}
+
+/* 升级动画 */
+.level-up {
+  background: linear-gradient(135deg, #FFE66D 0%, #FFD93D 100%);
+}
+
+.level-up-animation {
+  margin-bottom: 30rpx;
+}
+
+.level-icon {
+  font-size: 100px;
+  display: inline-block;
+  animation: spin 1s ease;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.3); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.level-up-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2D3436;
+  margin-bottom: 20rpx;
+}
+
+.level-up-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  font-size: 18px;
+  color: #2D3436;
+  margin-bottom: 16rpx;
+}
+
+.old-level {
+  color: #95A5A6;
+}
+
+.new-level {
+  color: #FF6B6B;
+  font-weight: 700;
+}
+
+.arrow {
+  color: #2D3436;
+}
+
+.level-up-name {
+  font-size: 16px;
+  color: #2D3436;
+  margin-bottom: 30rpx;
+}

@@ -1,0 +1,127 @@
+<view class="container">
+  <!-- 未创建家庭 -->
+  <view class="no-family" wx:if="{{!hasFamily}}">
+    <view class="welcome-card card">
+      <text class="welcome-icon">👋</text>
+      <text class="welcome-title">欢迎来到 GetStar</text>
+      <text class="welcome-desc">创建家庭账户,开始孩子的习惯养成之旅</text>
+      <button class="btn btn-primary mt-30" bindtap="createFamily">创建家庭</button>
+    </view>
+  </view>
+
+  <!-- 已创建家庭 -->
+  <view wx:else>
+    <!-- 家庭信息卡片 -->
+    <view class="family-info card">
+      <view class="family-header">
+        <text class="family-title">我的家庭</text>
+        <text class="family-members">{{childrenList.length}}个孩子</text>
+      </view>
+    </view>
+
+    <!-- 孩子列表 -->
+    <view class="children-section">
+      <view class="section-header">
+        <text class="section-title">孩子列表</text>
+        <button class="btn-add-child" wx:if="{{childrenList.length < 5}}" bindtap="addChild">
+          <text>+</text>
+          <text>添加</text>
+        </button>
+      </view>
+      
+      <view class="children-list">
+        <view 
+          class="child-item card {{item._id === currentChildId ? 'active' : ''}}" 
+          wx:for="{{childrenList}}" 
+          wx:key="_id">
+          <view class="child-avatar" bindtap="chooseAvatar" data-id="{{item._id}}">
+            <image src="{{item.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+            <view class="avatar-edit">
+              <text>编辑</text>
+            </view>
+          </view>
+          <view class="child-info">
+            <view class="child-header">
+              <text class="child-name">{{item.name}}</text>
+              <text class="child-level">Lv.{{item.level}}</text>
+            </view>
+            <view class="child-stats">
+              <view class="stat-item">
+                <text class="stat-value">{{item.points}}</text>
+                <text class="stat-label">积分</text>
+              </view>
+              <view class="stat-divider"></view>
+              <view class="stat-item">
+                <text class="stat-value coins">🪙</text>
+                <text class="stat-value">{{item.coins}}</text>
+                <text class="stat-label">金币</text>
+              </view>
+            </view>
+          </view>
+          <view class="child-actions">
+            <button class="btn-edit" bindtap="editChild" data-id="{{item._id}}">编辑</button>
+            <button class="btn-delete" bindtap="deleteChild" data-id="{{item._id}}" wx:if="{{childrenList.length > 1}}">删除</button>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{childrenList.length === 0}}">
+          <text class="empty-icon">👶</text>
+          <text class="empty-text">还没有添加孩子</text>
+          <button class="btn btn-primary mt-30" bindtap="addChild">添加孩子</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 设置入口 -->
+    <view class="settings-section">
+      <view class="settings-item" bindtap="showHelp">
+        <text class="settings-icon">❓</text>
+        <text class="settings-text">使用帮助</text>
+        <text class="settings-arrow">›</text>
+      </view>
+      <view class="settings-item" bindtap="showAbout">
+        <text class="settings-icon">ℹ️</text>
+        <text class="settings-text">关于我们</text>
+        <text class="settings-arrow">›</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 添加/编辑孩子弹窗 -->
+<view class="modal" wx:if="{{showChildModal}}" catchtap="closeChildModal">
+  <view class="modal-content child-modal" catchtap="stopPropagation">
+    <view class="modal-title">{{isEdit ? '编辑孩子' : '添加孩子'}}</view>
+    
+    <view class="form-item">
+      <text class="form-label">姓名</text>
+      <input 
+        class="form-input" 
+        placeholder="请输入孩子姓名"
+        value="{{childForm.name}}"
+        bindinput="onNameInput"
+        maxlength="10"
+      />
+    </view>
+    
+    <view class="avatar-choose">
+      <text class="form-label">选择头像</text>
+      <view class="avatar-list">
+        <view 
+          class="avatar-option {{item === childForm.avatar ? 'active' : ''}}" 
+          wx:for="{{avatarList}}" 
+          wx:key="*this"
+          bindtap="selectAvatar"
+          data-avatar="{{item}}">
+          <image src="{{item}}" mode="aspectFill"></image>
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-actions">
+      <button class="btn btn-outline" bindtap="closeChildModal">取消</button>
+      <button class="btn btn-primary" bindtap="saveChild">保存</button>
+    </view>
+  </view>
+</view>

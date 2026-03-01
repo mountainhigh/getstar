@@ -1,0 +1,123 @@
+<view class="container">
+  <!-- 孩子切换器 -->
+  <view class="child-switcher" wx:if="{{childrenList.length > 1}}">
+    <scroll-view scroll-x class="child-scroll" show-scrollbar="{{false}}">
+      <view class="child-item {{item._id === currentChildId ? 'active' : ''}}" 
+            wx:for="{{childrenList}}" 
+            wx:key="_id"
+            bindtap="switchChild"
+            data-id="{{item._id}}">
+        <view class="child-avatar">
+          <image src="{{item.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+        </view>
+        <view class="child-info">
+          <text class="child-name">{{item.name}}</text>
+          <text class="child-points">{{item.points}}积分</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 积分卡片 -->
+  <view class="points-card card" wx:if="{{currentChild}}">
+    <view class="points-header">
+      <view class="points-title">
+        <text class="points-value">{{currentChild.points}}</text>
+        <text class="points-label">总积分</text>
+      </view>
+      <view class="coins-info">
+        <text class="coins-icon">🪙</text>
+        <text class="coins-value">{{currentChild.coins}}</text>
+        <text class="coins-label">金币</text>
+      </view>
+    </view>
+    <view class="level-info">
+      <view class="level-bar">
+        <view class="level-progress" style="width: {{levelProgress}}%"></view>
+      </view>
+      <view class="level-text">
+        <text>{{currentChild.level}}</text>
+        <text>{{levelName}}</text>
+      </view>
+    </view>
+    <!-- 称号展示 -->
+    <view class="badge-display" wx:if="{{currentBadge}}" bindtap="goToBadges">
+      <text class="badge-icon">{{currentBadge.icon}}</text>
+      <text class="badge-name">{{currentBadge.name}}</text>
+    </view>
+  </view>
+
+  <!-- 习惯列表 -->
+  <view class="habit-list">
+    <view class="section-header">
+      <text class="section-title">今日习惯</text>
+      <text class="section-subtitle">{{completedCount}}/{{habits.length}}</text>
+    </view>
+    
+    <view class="habit-item card" 
+          wx:for="{{habits}}" 
+          wx:key="_id"
+          bindtap="goToCheckIn"
+          data-habit="{{item}}">
+      <view class="habit-left">
+        <view class="habit-icon" style="background: {{item.categoryColor}};">
+          <text>{{item.icon}}</text>
+        </view>
+        <view class="habit-info">
+          <text class="habit-name">{{item.name}}</text>
+          <text class="habit-points">{{item.points}}积分</text>
+        </view>
+      </view>
+      <view class="habit-right">
+        <view class="check-btn {{item.todayChecked ? 'checked' : ''}}">
+          <text class="check-icon">{{item.todayChecked ? '✓' : '+'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{habits.length === 0}}">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">还没有习惯,快去添加吧</text>
+      <button class="btn btn-primary mt-30" bindtap="goToHabitManage">添加习惯</button>
+    </view>
+  </view>
+
+  <!-- 提示 -->
+  <view class="tips" wx:if="{{tips}}">
+    <text class="tips-icon">💡</text>
+    <text class="tips-text">{{tips}}</text>
+  </view>
+</view>
+
+<!-- 打卡成功弹窗 -->
+<view class="modal" wx:if="{{showSuccessModal}}" catchtap="closeSuccessModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="success-animation">
+      <text class="success-icon">🎉</text>
+    </view>
+    <view class="success-title">打卡成功!</view>
+    <view class="success-points">
+      <text>+{{lastPoints}}积分</text>
+      <text class="coins">+{{lastCoins}}金币</text>
+    </view>
+    <button class="btn btn-primary mt-30" bindtap="closeSuccessModal">确定</button>
+  </view>
+</view>
+
+<!-- 升级弹窗 -->
+<view class="modal" wx:if="{{showLevelUpModal}}" catchtap="closeLevelUpModal">
+  <view class="modal-content level-up" catchtap="stopPropagation">
+    <view class="level-up-animation">
+      <text class="level-icon">⭐</text>
+    </view>
+    <view class="level-up-title">升级啦!</view>
+    <view class="level-up-text">
+      <text class="old-level">Lv.{{oldLevel}}</text>
+      <text class="arrow">→</text>
+      <text class="new-level">Lv.{{newLevel}}</text>
+    </view>
+    <view class="level-up-name">{{newLevelName}}</view>
+    <button class="btn btn-primary mt-30" bindtap="closeLevelUpModal">太棒了!</button>
+  </view>
+</view>

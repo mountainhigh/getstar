@@ -1,0 +1,60 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/check-in-detail/check-in-detail",
+    "pages/habit-templates/habit-templates",
+    "pages/children-manage/children-manage",
+    "pages/habit-manage/habit-manage",
+    "pages/check-in-history/check-in-history",
+    "pages/leaderboard/leaderboard",
+    "pages/reward-exchange/reward-exchange",
+    "pages/reward-manage/reward-manage",
+    "pages/exchange-history/exchange-history",
+    "pages/statistics/statistics",
+    "pages/badge-collection/badge-collection"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FF6B6B",
+    "navigationBarTitleText": "GetStar",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F7F9FC"
+  },
+  "tabBar": {
+    "color": "#8E8E93",
+    "selectedColor": "#FF6B6B",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "打卡",
+        "iconPath": "images/tabbar/checkin.png",
+        "selectedIconPath": "images/tabbar/checkin-active.png"
+      },
+      {
+        "pagePath": "pages/habit-manage/habit-manage",
+        "text": "习惯",
+        "iconPath": "images/tabbar/habit.png",
+        "selectedIconPath": "images/tabbar/habit-active.png"
+      },
+      {
+        "pagePath": "pages/check-in-history/check-in-history",
+        "text": "记录",
+        "iconPath": "images/tabbar/history.png",
+        "selectedIconPath": "images/tabbar/history-active.png"
+      },
+      {
+        "pagePath": "pages/children-manage/children-manage",
+        "text": "我的",
+        "iconPath": "images/tabbar/my.png",
+        "selectedIconPath": "images/tabbar/my-active.png"
+      }
+    ]
+  },
+  "cloudfunctionRoot": "cloudfunctions/",
+  "cloudbaseRoot": "cloudbase/",
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}
