@@ -9,6 +9,7 @@ App({
         env: 'cloud1-4g6msqhd5bbad708', // CloudBase环境ID
         traceUser: true,
       });
+      console.log('CloudBase 初始化完成，环境ID: cloud1-4g6msqhd5bbad708');
     }
 
     // 获取用户信息
@@ -20,6 +21,7 @@ App({
       currentChildId: null, // 当前选中的孩子ID
       isLoggedIn: false, // 登录状态
       hasFamily: false, // 是否有家庭
+      isInitialized: false, // 是否初始化完成
     };
 
     // 检查登录状态并初始化用户数据
@@ -28,58 +30,145 @@ App({
 
   async checkLoginAndInit() {
     try {
-      // 获取openid
-      const openid = await this.getOpenid();
-      if (!openid) {
-        console.error('获取openid失败');
-        this.handleNotLoggedIn();
-        return;
-      }
+      // 首先初始化数据库（只在首次启动时执行）
+      await this.initDatabaseIfNeeded();
 
-      this.globalData.openid = openid;
-      this.globalData.isLoggedIn = true;
+      // 获取微信用户信息（昵称和头像）
+      const userInfo = await this.getWeChatUserInfo();
 
-      // 调用登录云函数获取完整用户信息
+      // 调用登录云函数获取完整用户信息（传入微信昵称和头像）
       const loginRes = await wx.cloud.callFunction({
-        name: 'userLogin'
+        name: 'userLogin',
+        data: {
+          nickname: userInfo.nickName || '',
+          avatar: userInfo.avatarUrl || ''
+        }
       });
 
-      if (loginRes.result.success) {
-        const { userId, familyId, isNewUser, childrenCount } = loginRes.result.data;
+      if (loginRes.result && loginRes.result.success) {
+        const { userId, openid, familyId, isNewUser, childrenCount, habitTemplates } = loginRes.result.data;
 
+        // 先设置 openid，确保 loadFirstChild 能正常工作
+        this.globalData.openid = openid;
         this.globalData.userId = userId;
         this.globalData.familyId = familyId;
+        this.globalData.isLoggedIn = true;
         this.globalData.hasFamily = true;
+        this.globalData.isInitialized = true; // 标记初始化完成
+
+        // 保存习惯模板到全局数据（首次登录）
+        if (isNewUser && habitTemplates) {
+          this.globalData.habitTemplates = habitTemplates;
+        }
 
         console.log('登录成功:', {
           userId,
+          openid,
           familyId,
           isNewUser,
-          childrenCount
+          childrenCount,
+          hasTemplates: habitTemplates ? habitTemplates.length : 0
         });
 
-        // 获取家庭中第一个孩子作为默认选中
+        // 获取家庭中第一个孩子作为默认选中（确保 openid 已设置）
         if (familyId) {
-          await this.loadFirstChild(familyId);
+          try {
+            await this.loadFirstChild(familyId);
+          } catch (err) {
+            console.error('加载第一个孩子失败:', err);
+          }
         }
       } else {
         console.error('登录云函数调用失败:', loginRes.result);
+        this.globalData.isInitialized = true; // 即使失败也标记为已初始化
       }
     } catch (err) {
       console.error('登录初始化失败:', err);
-      this.handleNotLoggedIn();
+      this.globalData.isInitialized = true; // 即使失败也标记为已初始化
     }
   },
 
+  // 初始化数据库（如果需要）
+  async initDatabaseIfNeeded() {
+    try {
+      // 检查是否已经初始化过
+      const initFlag = wx.getStorageSync('dbInitialized');
+      if (initFlag) {
+        console.log('数据库已初始化，跳过');
+        return;
+      }
+
+      console.log('首次启动，开始初始化数据库...');
+
+      // 调用初始化云函数
+      const initRes = await wx.cloud.callFunction({
+        name: 'initDatabase',
+        data: {
+          drop: false
+        }
+      });
+
+      if (initRes.result && initRes.result.success) {
+        console.log('数据库初始化成功:', initRes.result.message);
+        console.log('初始化结果:', initRes.result.data);
+
+        // 标记为已初始化
+        wx.setStorageSync('dbInitialized', true);
+        console.log('数据库初始化完成，已标记');
+      } else {
+        console.error('数据库初始化失败:', initRes.result);
+      }
+    } catch (err) {
+      console.error('数据库初始化异常:', err);
+      // 初始化失败不影响小程序启动
+    }
+  },
+
+  // 获取微信用户信息
+  getWeChatUserInfo() {
+    return new Promise((resolve) => {
+      wx.getUserProfile({
+        desc: '用于完善用户资料',
+        success: (res) => {
+          resolve({
+            nickName: res.userInfo.nickName,
+            avatarUrl: res.userInfo.avatarUrl
+          });
+        },
+        fail: (err) => {
+          console.log('获取用户信息失败，使用默认值:', err);
+          // 用户拒绝授权，返回空值
+          resolve({
+            nickName: '',
+            avatarUrl: ''
+          });
+        }
+      });
+    });
+  },
+
   async loadFirstChild(familyId) {
+    // 防止重复调用
+    if (!familyId || !this.globalData.openid) {
+      return;
+    }
+
+    // 如果已经设置了 currentChildId，不再重复加载
+    if (this.globalData.currentChildId) {
+      return;
+    }
+
     try {
       const db = wx.cloud.database();
       const childRes = await db.collection('children').where({
-        familyId: familyId
+        familyId: familyId,
+        openid: this.globalData.openid
       }).orderBy('createTime', 'asc').limit(1).get();
 
       if (childRes.data.length > 0) {
-        this.globalData.currentChildId = childRes.data[0]._id;
+        const childId = childRes.data[0]._id;
+        console.log('设置默认孩子:', childId);
+        this.globalData.currentChildId = childId;
       }
     } catch (err) {
       console.error('加载第一个孩子失败:', err);
@@ -91,23 +180,6 @@ App({
     this.globalData.hasFamily = false;
   },
 
-  async getOpenid() {
-    if (this.globalData.openid) {
-      return this.globalData.openid;
-    }
-
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'login'
-      });
-      this.globalData.openid = res.result.openid;
-      return this.globalData.openid;
-    } catch (err) {
-      console.error('获取openid失败:', err);
-      return null;
-    }
-  },
-
   // 获取当前用户信息
   getUserInfo() {
     return {
@@ -116,12 +188,16 @@ App({
       openid: this.globalData.openid,
       familyId: this.globalData.familyId,
       hasFamily: this.globalData.hasFamily,
-      currentChildId: this.globalData.currentChildId
+      currentChildId: this.globalData.currentChildId,
+      isInitialized: this.globalData.isInitialized
     };
   },
 
   // 设置当前选中的孩子
   setCurrentChild(childId) {
-    this.globalData.currentChildId = childId;
+    if (childId && childId !== this.globalData.currentChildId) {
+      console.log('更新当前孩子:', childId);
+      this.globalData.currentChildId = childId;
+    }
   }
 });

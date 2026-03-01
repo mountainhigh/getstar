@@ -1,4 +1,5 @@
 const app = getApp()
+const { getStorage, setStorage } = require('../../utils/storage')
 
 Page({
   data: {
@@ -16,6 +17,18 @@ Page({
       this.setData({ currentChildId: options.childId })
     }
     this.loadChildren()
+  },
+
+  onShow() {
+    // 从 storage 读取最新的 currentChildId
+    const storageChildId = getStorage('currentChildId')
+    if (storageChildId && storageChildId !== this.data.currentChildId) {
+      console.log('兑换历史页面检测到孩子切换:', storageChildId)
+      this.setData({ currentChildId: storageChildId })
+      // 同步到 app.globalData
+      app.globalData.currentChildId = storageChildId
+      this.loadExchangeHistory()
+    }
   },
 
   // 加载孩子列表
@@ -37,6 +50,8 @@ Page({
                 currentChildIndex: 0,
                 currentChildId: res.data[0]._id
               })
+              setStorage('currentChildId', res.data[0]._id)
+              app.globalData.currentChildId = res.data[0]._id
             } else {
               const index = res.data.findIndex(c => c._id === this.data.currentChildId)
               this.setData({

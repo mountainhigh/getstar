@@ -28,7 +28,7 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "打卡",
+        "text": "首页",
         "iconPath": "images/tabbar/checkin.png",
         "selectedIconPath": "images/tabbar/checkin-active.png"
       },
@@ -52,8 +52,7 @@
       }
     ]
   },
-  "cloudfunctionRoot": "cloudfunctions/",
-  "cloudbaseRoot": "cloudbase/",
+
   "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents"

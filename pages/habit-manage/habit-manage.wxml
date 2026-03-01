@@ -81,12 +81,15 @@
       <text class="form-label">积分</text>
       <view class="points-wrapper">
         <button class="btn-minus" bindtap="adjustPoints" data-delta="-1">-</button>
-        <input 
-          class="points-input" 
-          type="number" 
-          value="{{editForm.points}}"
-          bindinput="onPointsInput"
-        />
+        <view class="points-display-wrapper">
+          <text class="points-display">{{editForm.points}}</text>
+          <input
+            class="points-input"
+            type="number"
+            value="{{editForm.points}}"
+            bindinput="onPointsInput"
+          />
+        </view>
         <button class="btn-plus" bindtap="adjustPoints" data-delta="1">+</button>
       </view>
     </view>

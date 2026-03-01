@@ -1,4 +1,5 @@
 const app = getApp()
+const { getStorage, setStorage } = require('../../utils/storage')
 
 Page({
   data: {
@@ -29,10 +30,21 @@ Page({
     this.loadRewards()
   },
 
+  onShow() {
+    // 从 storage 读取最新的 currentChildId
+    const storageChildId = getStorage('currentChildId')
+    if (storageChildId && storageChildId !== this.data.currentChildId) {
+      console.log('奖励页面检测到孩子切换:', storageChildId)
+      this.setData({ currentChildId: storageChildId })
+      // 同步到 app.globalData
+      app.globalData.currentChildId = storageChildId
+    }
+  },
+
   // 加载孩子列表
   loadChildren() {
     const db = wx.cloud.database()
-    
+
     db.collection('children')
       .where({
         familyId: app.globalData.familyId,
@@ -42,7 +54,7 @@ Page({
       .get({
         success: res => {
           console.log('孩子列表:', res.data)
-          
+
           if (res.data.length > 0) {
             // 如果没有指定孩子ID，默认选择第一个
             if (!this.data.currentChildId) {
@@ -51,6 +63,8 @@ Page({
                 currentChildIndex: 0,
                 currentChildId: res.data[0]._id
               })
+              setStorage('currentChildId', res.data[0]._id)
+              app.globalData.currentChildId = res.data[0]._id
             } else {
               // 找到指定孩子的索引
               const index = res.data.findIndex(c => c._id === this.data.currentChildId)

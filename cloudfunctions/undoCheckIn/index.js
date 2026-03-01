@@ -22,7 +22,7 @@ exports.main = async (event, context) => {
     }
 
     // 查询打卡记录
-    const checkInRes = await db.collection('check_in_records').doc(checkInId).get();
+    const checkInRes = await db.collection('check_ins').doc(checkInId).get();
 
     if (!checkInRes.data) {
       return {
@@ -35,7 +35,7 @@ exports.main = async (event, context) => {
 
     // 验证权限（只能撤销自己家庭的打卡）
     const userRes = await db.collection('users').where({
-      _openid: OPENID
+      openid: OPENID
     }).get();
 
     if (userRes.data.length === 0) {
@@ -99,7 +99,7 @@ exports.main = async (event, context) => {
     });
 
     // 删除打卡记录
-    await db.collection('check_in_records').doc(checkInId).remove();
+    await db.collection('check_ins').doc(checkInId).remove();
 
     // 记录金币变动
     if (pointsToDeduct > 0) {

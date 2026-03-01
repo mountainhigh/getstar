@@ -91,25 +91,47 @@
 
 .habit-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-  margin-left: 20rpx;
+  flex-direction: row;
+  gap: 4rpx;
+  margin-left: 16rpx;
 }
 
-.btn-action {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
+.habit-actions .btn-action {
+  width: 48rpx !important;
+  height: 48rpx !important;
+  min-width: 48rpx !important;
+  max-width: 48rpx !important;
+  min-height: 48rpx !important;
+  max-height: 48rpx !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-radius: 50% !important;
   background: #F8F9FA;
   border: 2rpx solid #E8ECEF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
   color: #636E72;
   transition: all 0.3s ease;
-  padding: 0;
+  flex-shrink: 0;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+.habit-actions .btn-action::after {
+  border: none !important;
+}
+
+.habit-actions .btn-action text {
+  display: inline-block;
+  line-height: 1;
+  font-size: 14px;
 }
 
 .btn-action:active {
@@ -220,31 +242,64 @@
   gap: 16rpx;
 }
 
-.btn-minus,
-.btn-plus {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 12rpx;
-  background: #F8F9FA;
-  border: 2rpx solid #E8ECEF;
-  font-size: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* 积分调整按钮 - 使用更具体的选择器确保覆盖全局样式 */
+.points-wrapper .btn-minus,
+.points-wrapper .btn-plus {
+  width: 60rpx !important;
+  height: 60rpx !important;
+  border-radius: 50% !important;
+  background: #F8F9FA !important;
+  border: 2rpx solid #E8ECEF !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
 }
 
-.btn-minus {
+.points-wrapper .btn-minus:active,
+.points-wrapper .btn-plus:active {
+  transform: scale(0.95);
+}
+
+.points-wrapper .btn-minus {
   color: #FF6B6B;
 }
 
-.btn-plus {
+.points-wrapper .btn-plus {
   color: #4ECDC4;
 }
 
-.points-input {
+.points-display-wrapper {
+  position: relative;
   flex: 1;
   height: 64rpx;
+}
+
+.points-display {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #FF6B6B;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.points-input {
+  width: 100%;
+  height: 100%;
   background: #F8F9FA;
   border-radius: 12rpx;
   text-align: center;
@@ -252,6 +307,8 @@
   font-weight: 700;
   color: #FF6B6B;
   border: 2rpx solid transparent;
+  padding: 0;
+  z-index: 2;
 }
 
 .points-input:focus {

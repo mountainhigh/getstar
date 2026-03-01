@@ -1,11 +1,8 @@
 {
-  "name": "login",
+  "name": "getHabitTemplates",
   "version": "1.0.0",
-  "description": "",
+  "description": "获取习惯模板列表",
   "main": "index.js",
-  "scripts": {},
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"
   }

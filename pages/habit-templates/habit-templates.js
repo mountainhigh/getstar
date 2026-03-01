@@ -1,4 +1,5 @@
 const { showToast, showLoading, hideLoading } = require('../../utils/util');
+const { getStorage } = require('../../utils/storage');
 
 Page({
   data: {
@@ -7,9 +8,9 @@ Page({
       { id: 'all', name: '全部' },
       { id: 'study', name: '学习' },
       { id: 'life', name: '生活' },
-      { id: 'exercise', name: '运动' },
-      { id: 'habit', name: '习惯' },
-      { id: 'social', name: '社交' }
+      { id: 'sports', name: '运动' },
+      { id: 'manners', name: '礼仪' },
+      { id: 'labor', name: '劳动' }
     ],
     templates: [],
     filteredTemplates: [],
@@ -21,9 +22,9 @@ Page({
   onLoad(options) {
     const { childId } = options;
     if (!childId) {
-      // 如果没有传childId,使用当前选中的孩子
+      // 优先从 storage 读取当前选中的孩子
       const app = getApp();
-      childId = app.globalData.currentChildId;
+      childId = getStorage('currentChildId') || app.globalData.currentChildId;
     }
 
     if (!childId) {
@@ -42,25 +43,44 @@ Page({
   async loadTemplates() {
     try {
       showLoading('加载中...');
-      
-      const db = wx.cloud.database();
-      const res = await db.collection('habit_templates').get();
-      
-      const templates = res.data.map(t => ({
+
+      console.log('开始加载习惯模板...');
+
+      // 通过云函数读取习惯模板（云函数有管理员权限，不受前端安全规则限制）
+      const res = await wx.cloud.callFunction({
+        name: 'getHabitTemplates'
+      });
+
+      console.log('云函数返回结果:', res);
+
+      if (!res.result || !res.result.success) {
+        hideLoading();
+        showToast(res.result?.message || '加载失败');
+        return;
+      }
+
+      const templates = res.result.data.map(t => ({
         ...t,
+        id: t._id,
         selected: false
       }));
-      
+
+      console.log('处理后的模板数量:', templates.length);
+      console.log('第一个模板:', templates[0]);
+
       this.setData({
         templates,
         filteredTemplates: templates
       });
-      
+
+      console.log('setData完成, 当前filteredTemplates长度:', this.data.filteredTemplates.length);
+
       hideLoading();
     } catch (err) {
       hideLoading();
       console.error('加载习惯模板失败:', err);
-      showToast('加载失败');
+      console.error('错误详情:', JSON.stringify(err));
+      showToast('加载失败: ' + (err.errMsg || err.message || '未知错误'));
     }
   },
 
@@ -94,18 +114,18 @@ Page({
   toggleTemplate(e) {
     const templateId = e.currentTarget.dataset.id;
     const selectedTemplates = new Set(this.data.selectedTemplates);
-    
+
     if (selectedTemplates.has(templateId)) {
       selectedTemplates.delete(templateId);
     } else {
       selectedTemplates.add(templateId);
     }
-    
+
     const filteredTemplates = this.data.filteredTemplates.map(t => ({
       ...t,
-      selected: selectedTemplates.has(t.id)
+      selected: selectedTemplates.has(t._id)
     }));
-    
+
     this.setData({
       selectedTemplates,
       selectedCount: selectedTemplates.size,
@@ -119,55 +139,61 @@ Page({
   async addHabits() {
     try {
       const { selectedTemplates, templates, childId } = this.data;
-      
+
       if (selectedTemplates.size === 0) {
         showToast('请选择习惯');
         return;
       }
-      
+
       showLoading('添加中...');
-      
+
       const db = wx.cloud.database();
-      const _ = db.command;
       const app = getApp();
-      
-      // 获取当前孩子的习惯数量,用于排序
-      const habitRes = await db.collection('habits').where({
-        childId
-      }).count();
-      
-      let maxOrder = habitRes.total;
-      
-      // 批量添加习惯
-      const addPromises = Array.from(selectedTemplates).map(async (templateId) => {
-        const template = templates.find(t => t.id === templateId);
-        if (!template) return;
-        
-        await db.collection('habits').add({
-          data: {
-            childId,
-            familyId: app.globalData.familyId,
-            name: template.name,
-            icon: template.icon,
-            category: template.category,
-            categoryColor: template.color,
-            points: template.points,
-            order: ++maxOrder,
-            isActive: true,
-            createTime: db.serverDate()
-          }
-        });
-      });
-      
-      await Promise.all(addPromises);
-      
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const templateId of selectedTemplates) {
+        try {
+          const template = templates.find(t => t._id === templateId);
+          if (!template) continue;
+
+          const result = await db.collection('habits').add({
+            data: {
+              childId,
+              templateId: template._id,
+              name: template.name,
+              icon: template.icon,
+              category: template.category,
+              categoryName: template.categoryName,
+              color: template.color,
+              points: template.points,
+              order: template.order,
+              isActive: true,
+              createTime: db.serverDate(),
+              updateTime: db.serverDate()
+            }
+          });
+          console.log('✓ 已添加习惯:', template.name, 'ID:', result._id);
+          successCount++;
+        } catch (err) {
+          console.error('✗ 添加习惯失败:', err);
+          failCount++;
+        }
+      }
+
+      console.log(`习惯添加完成: 成功 ${successCount} 个, 失败 ${failCount} 个`);
+
       hideLoading();
-      showToast('添加成功');
-      
-      // 返回上一页
-      setTimeout(() => {
-        wx.navigateBack();
-      }, 500);
+
+      if (successCount > 0) {
+        showToast('添加成功');
+        setTimeout(() => {
+          wx.navigateBack();
+        }, 500);
+      } else {
+        showToast('添加失败,请重试');
+      }
     } catch (err) {
       hideLoading();
       console.error('添加习惯失败:', err);

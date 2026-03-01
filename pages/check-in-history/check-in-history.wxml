@@ -6,7 +6,7 @@
         <text>‹</text>
       </button>
       <text class="current-month">{{currentYear}}年{{currentMonth}}月</text>
-      <button class="btn-nav" bindtap="changeMonth" data-direction="next" wx:if="{{!isCurrentMonth}}">
+      <button class="btn-nav" bindtap="changeMonth" data-direction="next" disabled="{{isCurrentMonth}}">
         <text>›</text>
       </button>
     </view>
@@ -46,14 +46,7 @@
     </view>
   </view>
 
-  <!-- 导出按钮 -->
-  <view class="export-section">
-    <button class="export-btn" bindtap="exportData" loading="{{exporting}}">
-      <text>📊 导出数据</text>
-    </button>
-  </view>
-
-  <!-- 打卡记录列表 -->
+  <!-- 统计信息 -->
   <view class="history-section">
     <view class="section-header">
       <text class="section-title">{{selectedDateStr}} 打卡记录</text>

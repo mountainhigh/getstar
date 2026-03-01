@@ -18,7 +18,21 @@ Page({
     lastCoins: 0,
     oldLevel: 1,
     newLevel: 1,
-    newLevelName: ''
+    newLevelName: '',
+    isNewUser: false,
+    habitTemplates: [],
+    showChildModal: false,
+    childForm: {
+      name: '',
+      avatar: '👶'
+    },
+    avatarList: [
+      '👶',
+      '👦',
+      '🧒',
+      '👧',
+      '🧑'
+    ]
   },
 
   onLoad() {
@@ -37,8 +51,18 @@ Page({
     try {
       showLoading('加载中...');
 
-      // 检查登录状态
+      // 等待 app 初始化完成
       const app = getApp();
+
+      // 如果初始化还未完成，等待一段时间
+      if (!app.globalData.isInitialized) {
+        let waitCount = 0;
+        while (!app.globalData.isInitialized && waitCount < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          waitCount++;
+        }
+      }
+
       const userInfo = app.getUserInfo();
 
       if (!userInfo.isLoggedIn) {
@@ -47,28 +71,17 @@ Page({
         return;
       }
 
-      // 获取当前选中的孩子ID
-      const currentChildId = getStorage('currentChildId');
-
-      if (app.globalData.hasFamily === false) {
-        // 没有创建家庭,跳转到孩子管理页面
-        hideLoading();
-        wx.navigateTo({
-          url: '/pages/children-manage/children-manage?createFamily=true'
-        });
-        return;
-      }
-
-      if (currentChildId) {
-        this.setData({ currentChildId });
-      } else if (app.globalData.currentChildId) {
-        this.setData({ currentChildId: app.globalData.currentChildId });
-      }
-
       // 加载孩子列表和习惯列表
       await this.loadChildrenList();
-      await this.loadHabits();
-      
+
+      // 如果是新用户且有习惯模板,设置标志
+      if (app.globalData.habitTemplates && app.globalData.habitTemplates.length > 0) {
+        this.setData({
+          isNewUser: true,
+          habitTemplates: app.globalData.habitTemplates
+        });
+      }
+
       hideLoading();
     } catch (err) {
       hideLoading();
@@ -82,6 +95,15 @@ Page({
    */
   async refreshData() {
     try {
+      // 从 storage 中读取最新的 currentChildId
+      const currentChildId = getStorage('currentChildId');
+      if (currentChildId && currentChildId !== this.data.currentChildId) {
+        console.log('检测到孩子切换，更新 currentChildId:', currentChildId);
+        this.setData({ currentChildId });
+        // 同步更新 app.globalData
+        getApp().globalData.currentChildId = currentChildId;
+      }
+
       await this.loadCurrentChild();
       await this.loadHabits();
       await this.checkTodayStatus();
@@ -183,7 +205,7 @@ Page({
 
       const today = formatDate(new Date(), 'YYYY-MM-DD');
       const db = wx.cloud.database();
-      
+
       const res = await db.collection('check_ins').where({
         childId: this.data.currentChildId,
         date: today
@@ -196,13 +218,17 @@ Page({
       }));
 
       const completedCount = habits.filter(h => h.todayChecked).length;
-      
+
       this.setData({
         habits,
         completedCount
       });
     } catch (err) {
       console.error('检查打卡状态失败:', err);
+      // 如果集合不存在,静默处理
+      if (err.errCode && err.errCode === -502005) {
+        console.log('check_ins 集合不存在,将自动创建');
+      }
     }
   },
 
@@ -343,6 +369,114 @@ Page({
     wx.navigateTo({
       url: '/pages/badge-collection/badge-collection'
     });
+  },
+
+  /**
+   * 首次登录添加孩子
+   */
+  addFirstChild() {
+    this.setData({
+      showChildModal: true,
+      childForm: {
+        name: '',
+        avatar: this.data.avatarList[0]
+      }
+    });
+  },
+
+  /**
+   * 保存孩子（首次登录）
+   */
+  async saveChild() {
+    const { name, avatar } = this.data.childForm;
+
+    if (!name.trim()) {
+      showToast('请输入孩子姓名');
+      return;
+    }
+
+    try {
+      showLoading('添加中...');
+
+      const app = getApp();
+      const db = wx.cloud.database();
+
+      // 添加孩子（_openid 由系统自动注入）
+      const childResult = await db.collection('children').add({
+        data: {
+          familyId: app.globalData.familyId,
+          openid: app.globalData.openid,
+          name: name.trim(),
+          avatar: avatar,
+          points: 0,
+          coins: 0,
+          level: 1,
+          createTime: db.serverDate()
+        }
+      });
+
+      const childId = childResult._id || childResult.id || childResult.data?._id;
+      console.log('孩子添加成功,childId:', childId);
+
+      // 从模板批量添加习惯(按order排序,前10个)
+      showLoading('正在添加习惯模板...');
+      const addResult = await wx.cloud.callFunction({
+        name: 'addHabitsFromTemplates',
+        data: {
+          childId: childId,
+          limit: 10
+        }
+      });
+      console.log('习惯模板添加结果:', addResult);
+      console.log('习惯模板添加完成');
+
+      // 设置为当前孩子
+      setStorage('currentChildId', childId);
+      app.globalData.currentChildId = childId;
+
+      hideLoading();
+      showToast('添加成功');
+
+      // 关闭弹窗
+      this.setData({ showChildModal: false });
+
+      // 刷新页面数据
+      await this.loadChildrenList();
+      await this.loadHabits();
+
+      // 更新状态
+      this.setData({ isNewUser: false });
+    } catch (err) {
+      hideLoading();
+      console.error('添加孩子失败:', err);
+      showToast(`添加失败: ${err.message || '请重试'}`);
+    }
+  },
+
+  /**
+   * 选择头像
+   */
+  selectAvatar(e) {
+    const avatar = e.currentTarget.dataset.avatar;
+    this.setData({
+      'childForm.avatar': avatar
+    });
+  },
+
+  /**
+   * 输入姓名
+   */
+  onNameInput(e) {
+    this.setData({
+      'childForm.name': e.detail.value
+    });
+  },
+
+  /**
+   * 关闭弹窗
+   */
+  closeChildModal() {
+    this.setData({ showChildModal: false });
   },
 
   /**

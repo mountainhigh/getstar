@@ -1,6 +1,17 @@
 <view class="container">
+  <!-- 没有孩子时显示添加界面 -->
+  <view class="welcome-section" wx:if="{{childrenList.length === 0}}">
+    <view class="welcome-card card">
+      <text class="welcome-icon">{{isNewUser ? '👋' : '👶'}}</text>
+      <text class="welcome-title">{{isNewUser ? '欢迎使用 GetStar' : '添加孩子'}}</text>
+      <text class="welcome-desc">{{isNewUser ? '添加孩子的信息,系统将自动为您添加25个精选习惯模板' : '还没有添加孩子,快来添加第一个孩子吧'}}</text>
+      <button class="btn btn-primary mt-30" bindtap="addFirstChild">添加孩子</button>
+    </view>
+  </view>
+
   <!-- 孩子切换器 -->
-  <view class="child-switcher" wx:if="{{childrenList.length > 1}}">
+  <view wx:else>
+    <view class="child-switcher" wx:if="{{childrenList.length > 1}}">
     <scroll-view scroll-x class="child-scroll" show-scrollbar="{{false}}">
       <view class="child-item {{item._id === currentChildId ? 'active' : ''}}" 
             wx:for="{{childrenList}}" 
@@ -81,6 +92,7 @@
       <text class="empty-text">还没有习惯,快去添加吧</text>
       <button class="btn btn-primary mt-30" bindtap="goToHabitManage">添加习惯</button>
     </view>
+    </view>
   </view>
 
   <!-- 提示 -->
@@ -105,19 +117,58 @@
   </view>
 </view>
 
-<!-- 升级弹窗 -->
-<view class="modal" wx:if="{{showLevelUpModal}}" catchtap="closeLevelUpModal">
-  <view class="modal-content level-up" catchtap="stopPropagation">
-    <view class="level-up-animation">
-      <text class="level-icon">⭐</text>
+  <!-- 升级弹窗 -->
+  <view class="modal" wx:if="{{showLevelUpModal}}" catchtap="closeLevelUpModal">
+    <view class="modal-content level-up" catchtap="stopPropagation">
+      <view class="level-up-animation">
+        <text class="level-icon">⭐</text>
+      </view>
+      <view class="level-up-title">升级啦!</view>
+      <view class="level-up-text">
+        <text class="old-level">Lv.{{oldLevel}}</text>
+        <text class="arrow">→</text>
+        <text class="new-level">Lv.{{newLevel}}</text>
+      </view>
+      <view class="level-up-name">{{newLevelName}}</view>
+      <button class="btn btn-primary mt-30" bindtap="closeLevelUpModal">太棒了!</button>
     </view>
-    <view class="level-up-title">升级啦!</view>
-    <view class="level-up-text">
-      <text class="old-level">Lv.{{oldLevel}}</text>
-      <text class="arrow">→</text>
-      <text class="new-level">Lv.{{newLevel}}</text>
-    </view>
-    <view class="level-up-name">{{newLevelName}}</view>
-    <button class="btn btn-primary mt-30" bindtap="closeLevelUpModal">太棒了!</button>
   </view>
-</view>
+
+  <!-- 添加孩子弹窗 -->
+  <view class="modal" wx:if="{{showChildModal}}" catchtap="closeChildModal">
+    <view class="modal-content child-modal" catchtap="stopPropagation">
+      <view class="modal-title">添加孩子</view>
+
+      <view class="form-item">
+        <text class="form-label">姓名</text>
+        <input
+          class="form-input"
+          placeholder="请输入孩子姓名"
+          value="{{childForm.name}}"
+          bindinput="onNameInput"
+          maxlength="10"
+        />
+      </view>
+
+      <view class="avatar-choose">
+        <text class="form-label">选择头像</text>
+        <view class="avatar-list">
+          <view
+            class="avatar-option {{item === childForm.avatar ? 'active' : ''}}"
+            wx:for="{{avatarList}}"
+            wx:for-index="index"
+            wx:key="index"
+            bindtap="selectAvatar"
+            data-avatar="{{item}}">
+            <text class="avatar-emoji">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn btn-outline" bindtap="closeChildModal">取消</button>
+        <button class="btn btn-primary" bindtap="saveChild">保存</button>
+      </view>
+    </view>
+  </view>
+

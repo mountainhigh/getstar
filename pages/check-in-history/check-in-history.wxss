@@ -11,33 +11,45 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 40rpx;
+  gap: 24rpx;
   margin-bottom: 30rpx;
 }
 
 .btn-nav {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
+  min-width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
   background: #F8F9FA;
   border: 2rpx solid #E8ECEF;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 28px;
   color: #636E72;
-  padding: 0;
+  padding: 0 16rpx;
   line-height: 1;
+  transition: all 0.2s ease;
 }
 
 .btn-nav:active {
   background: #F0F1F3;
+  border-color: #D1D5DB;
+  transform: scale(0.95);
+}
+
+.btn-nav[disabled] {
+  opacity: 0.3;
+  background: #F8F9FA !important;
+  border-color: #E8ECEF !important;
+  color: #636E72 !important;
 }
 
 .current-month {
+  min-width: 240rpx;
   font-size: 18px;
   font-weight: 600;
   color: #2D3436;
+  padding: 0 8rpx;
 }
 
 .calendar-weekdays {
@@ -116,31 +128,6 @@
   padding: 30rpx;
   margin-bottom: 20rpx;
   color: #FFFFFF;
-}
-
-/* 导出区域 */
-.export-section {
-  padding: 0 20rpx 20rpx;
-}
-
-.export-btn {
-  width: 100%;
-  padding: 24rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  border: none;
-  border-radius: 16rpx;
-  font-size: 28rpx;
-  font-weight: bold;
-  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10rpx;
-}
-
-.export-btn::after {
-  border: none;
 }
 
 .stat-item {

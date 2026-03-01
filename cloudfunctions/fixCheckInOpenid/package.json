@@ -1,7 +1,7 @@
 {
-  "name": "initDatabase",
+  "name": "fixCheckInOpenid",
   "version": "1.0.0",
-  "description": "初始化数据库表和初始数据",
+  "description": "修复 check_ins 表的 _openid 字段",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

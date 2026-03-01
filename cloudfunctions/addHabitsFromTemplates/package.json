@@ -1,7 +1,7 @@
 {
-  "name": "initDatabase",
+  "name": "addHabitsFromTemplates",
   "version": "1.0.0",
-  "description": "初始化数据库表和初始数据",
+  "description": "从模板添加习惯",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

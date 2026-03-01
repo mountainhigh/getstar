@@ -163,12 +163,23 @@ Page({
       // 检查今日是否已打卡
       const today = formatDate(new Date(), 'YYYY-MM-DD');
       const db = wx.cloud.database();
+      
+      console.log('=== 打卡详情页检查今日是否已打卡 ===');
+      console.log('habitId:', habit._id);
+      console.log('date:', today);
+      console.log('查询条件:', { habitId: habit._id, date: today });
+      console.log('查询条件类型:', { habitIdType: typeof habit._id, dateType: typeof today });
+
       const checkRes = await db.collection('check_ins').where({
         habitId: habit._id,
         date: today
       }).get();
 
+      console.log('打卡详情页查询结果:', checkRes.data.length, '条');
+      console.log('打卡详情页详细数据:', checkRes.data);
+
       if (checkRes.data.length > 0) {
+        console.log('今日已打卡，返回');
         showToast('今日已打卡');
         return;
       }

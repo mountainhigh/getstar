@@ -1,4 +1,5 @@
 const { showToast, showLoading, hideLoading } = require('../../utils/util');
+const { getStorage } = require('../../utils/storage');
 
 Page({
   data: {
@@ -35,11 +36,17 @@ Page({
         return;
       }
 
-      const childId = app.globalData.currentChildId;
+      // 优先从 storage 中读取 currentChildId
+      let childId = getStorage('currentChildId') || app.globalData.currentChildId;
 
       if (!childId) {
         showToast('请先选择孩子');
         return;
+      }
+
+      // 如果 storage 中的 childId 与 app.globalData 不同，同步更新
+      if (childId !== app.globalData.currentChildId) {
+        app.globalData.currentChildId = childId;
       }
 
       this.setData({ childId });

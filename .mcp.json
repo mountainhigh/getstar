@@ -7,7 +7,8 @@
       ],
       "env": {
         "INTEGRATION_IDE": "Claude"
-      }
+      },
+      "disabled": false
     }
   }
 }

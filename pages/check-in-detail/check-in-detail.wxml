@@ -10,27 +10,25 @@
         <text class="habit-category">{{habit.category}}</text>
       </view>
     </view>
-    <view class="habit-points">
-      <text class="points-label">获得积分</text>
-      <text class="points-value">{{habit.points}}</text>
-    </view>
   </view>
 
   <!-- 积分修改 -->
   <view class="points-modify card">
     <view class="section-title">
-      <text>修改积分</text>
-      <text class="tips">(可选)</text>
+      <text>本次积分</text>
+      <text class="tips">(可调整)</text>
     </view>
     <view class="points-input-wrapper">
       <button class="btn-minus" bindtap="adjustPoints" data-delta="-5">-5</button>
       <button class="btn-minus" bindtap="adjustPoints" data-delta="-1">-1</button>
-      <input 
-        class="points-input" 
-        type="number" 
-        value="{{points}}"
-        bindinput="onPointsInput"
-      />
+      <view class="points-display-wrapper">
+        <input
+          class="points-input"
+          type="number"
+          value="{{points}}"
+          bindinput="onPointsInput"
+        />
+      </view>
       <button class="btn-plus" bindtap="adjustPoints" data-delta="1">+1</button>
       <button class="btn-plus" bindtap="adjustPoints" data-delta="5">+5</button>
     </view>
@@ -84,3 +82,6 @@
     </button>
   </view>
 </view>
+
+<!-- 底部占位，防止内容被按钮遮挡 -->
+<view class="footer-spacer"></view>

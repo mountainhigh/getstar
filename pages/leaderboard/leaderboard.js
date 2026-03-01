@@ -1,4 +1,5 @@
 const app = getApp()
+const { getStorage } = require('../../utils/storage')
 
 Page({
   data: {
@@ -12,12 +13,19 @@ Page({
   onLoad(options) {
     this.setData({
       familyId: app.globalData.familyId,
-      currentChildId: options.childId || '',
+      currentChildId: options.childId || getStorage('currentChildId') || '',
     })
     this.loadLeaderboard()
   },
 
   onShow() {
+    // 从 storage 读取最新的 currentChildId
+    const storageChildId = getStorage('currentChildId')
+    if (storageChildId && storageChildId !== this.data.currentChildId) {
+      console.log('排行榜页面检测到孩子切换:', storageChildId)
+      this.setData({ currentChildId: storageChildId })
+      app.globalData.currentChildId = storageChildId
+    }
     // 每次显示页面刷新数据
     this.loadLeaderboard()
   },
