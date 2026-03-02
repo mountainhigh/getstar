@@ -85,7 +85,7 @@
 }
 
 .avatar-emoji {
-  font-size: 36rpx;
+  font-size: 75rpx;
   line-height: 1;
 }
 
@@ -675,9 +675,6 @@
   transform: scale(0.9);
 }
 
-.avatar-emoji {
-  font-size: 48px;
-}
 
 /* 弹窗操作按钮 */
 .modal-actions {

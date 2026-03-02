@@ -129,7 +129,8 @@ Page({
       const app = getApp();
       
       const res = await db.collection('children').where({
-        familyId: app.globalData.familyId
+        familyId: app.globalData.familyId,
+        isDeleted: false
       }).orderBy('createTime', 'asc').get();
 
       this.setData({ childrenList: res.data });
@@ -428,6 +429,7 @@ Page({
           points: 0,
           coins: 0,
           level: 1,
+          isDeleted: false,
           createTime: db.serverDate()
         }
       });

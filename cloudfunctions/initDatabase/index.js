@@ -62,8 +62,8 @@ const rewards = [
 // 需要初始化的表（全局共享数据，不需要 _openid）
 const globalTablesToInit = [
   { name: 'habit_templates', data: habitTemplates },
-  { name: 'badges', data: badges },
-  { name: 'rewards', data: rewards }
+  { name: 'badges', data: badges }
+  // 注意：rewards 已移除，改由 initUserRewards 云函数为每个用户单独初始化
 ];
 
 // 需要初始化的用户相关表（需要 _openid）
@@ -75,7 +75,7 @@ const userTablesToInit = [
   'habits',          // 习惯表
   'check_ins',       // 打卡记录表
   'daily_records',   // 每日记录表
-  'reward_records',  // 礼物兑换记录表
+  'reward_exchanges', // 奖品兑换表
   'user_badges',     // 用户称号表
   'leaderboard'      // 排行榜表
 ];

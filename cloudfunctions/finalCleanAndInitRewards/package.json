@@ -1,0 +1,9 @@
+{
+  "name": "finalCleanAndInitRewards",
+  "version": "1.0.0",
+  "description": "清理没有_openid的旧礼物数据并初始化用户默认礼物",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

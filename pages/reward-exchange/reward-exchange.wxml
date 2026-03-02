@@ -1,96 +1,210 @@
-<!-- 礼物兑换页面 -->
+<!-- 礼物兑换页面 - 优化版 -->
 <view class="exchange-container">
-  <!-- 孩子选择器 -->
-  <view class="child-selector">
-    <text class="selector-label">选择孩子：</text>
-    <picker mode="selector" range="{{children}}" range-key="name" bindchange="onChildChange" value="{{selectedChildIndex}}">
-      <view class="picker-value">
-        <text>{{selectedChild ? selectedChild.name : '请选择'}}</text>
-        <text class="arrow">›</text>
+  <!-- 孩子切换器 - 与首页完全一致的样式 -->
+  <view class="child-switcher" wx:if="{{children.length > 1}}">
+    <scroll-view scroll-x class="child-scroll" show-scrollbar="{{false}}">
+      <view class="child-item {{item._id === selectedChild._id ? 'active' : ''}}" 
+            wx:for="{{children}}" 
+            wx:key="_id"
+            bindtap="selectChild"
+            data-index="{{index}}">
+        <view class="child-avatar">
+          <text class="avatar-emoji" wx:if="{{item.avatar}}">{{item.avatar}}</text>
+          <image wx:else src="/images/default-avatar.png" mode="aspectFill"></image>
+        </view>
+        <view class="child-info">
+          <text class="child-name">{{item.name}}</text>
+          <text class="child-points">{{item.coins}}金币</text>
+        </view>
       </view>
-    </picker>
+    </scroll-view>
   </view>
 
-  <!-- 金币余额显示 -->
-  <view wx:if="{{selectedChild}}" class="coins-display">
-    <view class="coin-icon">🪙</view>
-    <text class="coins-count">{{selectedChild.coins || 0}}</text>
-    <text class="coins-label">金币</text>
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="nav-title">礼物兑换</view>
+    <view class="nav-actions">
+      <view class="nav-btn" bindtap="goToHistory">
+        <text class="nav-icon">📋</text>
+        <text class="nav-text">记录</text>
+      </view>
+      <view class="nav-btn" bindtap="goToManage">
+        <text class="nav-icon">⚙️</text>
+        <text class="nav-text">管理</text>
+      </view>
+    </view>
   </view>
 
   <!-- 分类筛选 -->
-  <view class="category-filter">
-    <view class="category-item {{selectedCategory === 'all' ? 'active' : ''}}" bindtap="selectCategory" data-category="all">
-      <text>全部</text>
-    </view>
-    <view class="category-item {{selectedCategory === 'food' ? 'active' : ''}}" bindtap="selectCategory" data-category="food">
-      <text>美食</text>
-    </view>
-    <view class="category-item {{selectedCategory === 'entertainment' ? 'active' : ''}}" bindtap="selectCategory" data-category="entertainment">
-      <text>娱乐</text>
-    </view>
-    <view class="category-item {{selectedCategory === 'activity' ? 'active' : ''}}" bindtap="selectCategory" data-category="activity">
-      <text>活动</text>
-    </view>
-    <view class="category-item {{selectedCategory === 'education' ? 'active' : ''}}" bindtap="selectCategory" data-category="education">
-      <text>学习</text>
-    </view>
-    <view class="category-item {{selectedCategory === 'toy' ? 'active' : ''}}" bindtap="selectCategory" data-category="toy">
-      <text>玩具</text>
-    </view>
+  <view class="category-section">
+    <scroll-view 
+      class="category-scroll" 
+      scroll-x="true" 
+      scroll-with-animation="true"
+      show-scrollbar="false">
+      <view class="category-list">
+        <view 
+          class="category-item {{currentCategory === item.id ? 'active' : ''}}" 
+          wx:for="{{categories}}" 
+          wx:for-index="idx"
+          wx:key="id"
+          bindtap="switchCategory"
+          data-id="{{item.id}}"
+          data-index="{{idx}}">
+          <view class="category-icon-wrapper" style="background: {{currentCategory === item.id ? item.activeColor : item.color}};">
+            <text class="category-icon">{{item.icon}}</text>
+          </view>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 
   <!-- 礼物列表 -->
-  <view class="rewards-grid">
-    <view wx:for="{{filteredRewards}}" wx:key="id" class="reward-card" bindtap="showExchangeDialog" data-reward="{{item}}">
-      <view class="reward-icon">{{item.icon}}</view>
-      <text class="reward-name">{{item.name}}</text>
-      <text class="reward-desc">{{item.description}}</text>
-      <view class="reward-cost">
-        <text class="cost-value">{{item.coinCost}}</text>
-        <text class="cost-unit">金币</text>
+  <view class="rewards-section">
+    <view class="section-header">
+      <view class="section-title-wrapper">
+        <text class="section-icon">🎁</text>
+        <text class="section-title">可兑换礼物</text>
+      </view>
+      <text class="section-count">共 {{filteredRewards.length}} 个</text>
+    </view>
+
+    <!-- 礼物网格 -->
+    <view class="rewards-grid" wx:if="{{filteredRewards.length > 0}}">
+      <view 
+        class="reward-card {{selectedChild && selectedChild.coins < (item.cost || item.coinCost || item.coinsRequired || 0) ? 'disabled' : ''}}"
+        wx:for="{{filteredRewards}}" 
+        wx:key="_id"
+        bindtap="onRewardTap"
+        data-reward="{{item}}"
+        data-id="{{item._id}}">
+        <view class="reward-header" style="background: {{item.color || 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)'}};">
+          <text class="reward-icon-text">{{item.icon || item.name[0]}}</text>
+          <view class="reward-badge" wx:if="{{selectedChild && selectedChild.coins >= (item.cost || item.coinCost || item.coinsRequired || 0)}}">
+            <text>可兑</text>
+          </view>
+          <view class="reward-badge insufficient" wx:else>
+            <text>不足</text>
+          </view>
+        </view>
+        <view class="reward-content">
+          <text class="reward-name">{{item.name}}</text>
+          <view class="reward-cost">
+            <text class="cost-icon">💰</text>
+            <text class="cost-value">{{item.cost || item.coinCost || item.coinsRequired || 0}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && filteredRewards.length === 0}}">
+      <view class="empty-animation">
+        <text class="empty-icon">🎁</text>
+      </view>
+      <text class="empty-title">暂无礼物</text>
+      <text class="empty-desc">该分类下还没有可兑换的礼物</text>
+      <button class="btn-manage" bindtap="goToManage">
+        <text class="btn-icon">+</text>
+        <text>添加礼物</text>
+      </button>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+
+  <!-- 底部安全区域 -->
+  <view class="safe-area"></view>
+
+  <!-- 孩子选择弹窗 -->
+  <view class="picker-modal {{showChildModal ? 'show' : ''}}" wx:if="{{showChildModal}}">
+    <view class="picker-mask" bindtap="hideChildPicker"></view>
+    <view class="picker-content">
+      <view class="picker-header">
+        <text class="picker-title">选择孩子</text>
+        <view class="picker-close" bindtap="hideChildPicker">✕</view>
+      </view>
+      <view class="picker-body">
+        <view 
+          class="picker-item {{selectedChild && selectedChild._id === item._id ? 'active' : ''}}"
+          wx:for="{{children}}"
+          wx:key="_id"
+          bindtap="selectChild"
+          data-index="{{index}}">
+          <view class="picker-avatar" style="background: {{item.color || '#FF6B6B'}};">
+            <text>{{item.name[0]}}</text>
+          </view>
+          <view class="picker-info">
+            <text class="picker-name">{{item.name}}</text>
+            <view class="picker-coins">
+              <text class="picker-coin-icon">💰</text>
+              <text>{{item.coins || 0}} 金币</text>
+            </view>
+          </view>
+          <view class="picker-check" wx:if="{{selectedChild && selectedChild._id === item._id}}">✓</view>
+        </view>
       </view>
     </view>
   </view>
 
   <!-- 兑换确认弹窗 -->
-  <view wx:if="{{showDialog}}" class="dialog-overlay" bindtap="hideDialog">
-    <view class="dialog-content" catchtap="stopPropagation">
-      <view class="dialog-header">
-        <text class="dialog-title">确认兑换</text>
-        <view class="close-btn" bindtap="hideDialog">✕</view>
+  <view class="confirm-modal {{showConfirm ? 'show' : ''}}" wx:if="{{showConfirm}}">
+    <view class="modal-mask" bindtap="cancelExchange"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">确认兑换</text>
+        <view class="modal-close" bindtap="cancelExchange">✕</view>
       </view>
-
-      <view class="dialog-body">
-        <view class="reward-summary">
-          <view class="summary-icon">{{selectedReward.icon}}</view>
-          <text class="summary-name">{{selectedReward.name}}</text>
-          <text class="summary-desc">{{selectedReward.description}}</text>
+      <view class="modal-body">
+        <view class="reward-preview" wx:if="{{selectedReward}}">
+          <view class="preview-icon" style="background: {{selectedReward.color || 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)'}};">
+            <text>{{selectedReward.icon || selectedReward.name[0]}}</text>
+          </view>
+          <text class="preview-name">{{selectedReward.name}}</text>
+          <text class="preview-category">{{selectedReward.categoryName || '其他'}}</text>
         </view>
-
-        <view class="exchange-info">
-          <view class="info-row">
-            <text class="info-label">孩子：</text>
-            <text class="info-value">{{selectedChild.name}}</text>
+        
+        <view class="exchange-details">
+          <view class="detail-row">
+            <view class="detail-label">
+              <text class="detail-icon">👤</text>
+              <text>兑换孩子</text>
+            </view>
+            <text class="detail-value">{{selectedChild ? selectedChild.name : ''}}</text>
           </view>
-          <view class="info-row">
-            <text class="info-label">消耗金币：</text>
-            <text class="info-value cost">{{selectedReward.coinCost}}</text>
+          <view class="detail-row">
+            <view class="detail-label">
+              <text class="detail-icon">💰</text>
+              <text>消耗金币</text>
+            </view>
+            <text class="detail-value cost">-{{selectedReward ? (selectedReward.cost || selectedReward.coinCost || selectedReward.coinsRequired || 0) : 0}}</text>
           </view>
-          <view class="info-row">
-            <text class="info-label">当前余额：</text>
-            <text class="info-value">{{selectedChild.coins || 0}}</text>
+          <view class="detail-row">
+            <view class="detail-label">
+              <text class="detail-icon">💳</text>
+              <text>当前余额</text>
+            </view>
+            <text class="detail-value">{{selectedChild ? selectedChild.coins : 0}}</text>
           </view>
-          <view wx:if="{{(selectedChild.coins || 0) < selectedReward.coinCost}}" class="warning-text">
-            ⚠️ 金币不足，还差 {{selectedReward.coinCost - (selectedChild.coins || 0)}} 金币
+          <view class="detail-row total">
+            <view class="detail-label">
+              <text class="detail-icon">✨</text>
+              <text>兑换后余额</text>
+            </view>
+            <text class="detail-value remaining">{{selectedChild && selectedReward ? selectedChild.coins - (selectedReward.cost || selectedReward.coinCost || selectedReward.coinsRequired || 0) : 0}}</text>
           </view>
         </view>
       </view>
-
-      <view class="dialog-footer">
-        <button class="btn-cancel" bindtap="hideDialog">取消</button>
-        <button class="btn-confirm" bindtap="confirmExchange" disabled="{{(selectedChild.coins || 0) < selectedReward.coinCost}}">
-          确认兑换
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="cancelExchange">取消</button>
+        <button class="btn-confirm" bindtap="confirmExchange">
+          <text class="btn-confirm-icon">✓</text>
+          <text>确认兑换</text>
         </button>
       </view>
     </view>

@@ -175,7 +175,7 @@ const db = wx.cloud.database();
 */
 
 /**
- * 10. reward_records (礼物兑换记录表)
+ * 10. reward_exchanges
  */
 /*
 {
@@ -516,29 +516,13 @@ async function initBadges() {
 }
 
 /**
- * 初始化礼物
+ * 初始化礼物（已废弃）
+ * 礼物现在由 initUserRewards 云函数初始化，使用 _openid 进行用户隔离
+ * 不再在数据库初始化时添加礼物
  */
 async function initRewards() {
-  try {
-    const res = await db.collection('rewards').limit(1).get();
-    
-    if (res.data.length === 0) {
-      console.log('初始化礼物数据...');
-      
-      for (const reward of rewards) {
-        await db.collection('rewards').add({
-          data: reward
-        });
-      }
-      
-      console.log('礼物数据初始化完成，共', rewards.length, '个礼物');
-    } else {
-      console.log('礼物数据已存在，跳过初始化');
-    }
-  } catch (err) {
-    console.error('初始化礼物失败:', err);
-    throw err;
-  }
+  console.log('礼物初始化已迁移到云函数 initUserRewards');
+  console.log('用户首次访问礼物页面时会自动初始化默认礼物');
 }
 
 /**

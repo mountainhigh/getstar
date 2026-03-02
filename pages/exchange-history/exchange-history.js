@@ -12,16 +12,27 @@ Page({
     currentChildIndex: 0
   },
 
-  onLoad(options) {
+  async onLoad(options) {
+    console.log('=== 兑换历史页面 onLoad 开始 ===')
+    console.log('options:', options)
+    console.log('storage 中的 currentChildId:', getStorage('currentChildId'))
+    
     if (options.childId) {
+      console.log('从 options 获取 childId:', options.childId)
       this.setData({ currentChildId: options.childId })
     }
     this.loadChildren()
+    console.log('=== 兑换历史页面 onLoad 结束 ===')
   },
 
   onShow() {
+    console.log('=== 兑换历史页面 onShow ===')
+    console.log('当前 currentChildId:', this.data.currentChildId)
+    
     // 从 storage 读取最新的 currentChildId
     const storageChildId = getStorage('currentChildId')
+    console.log('storage 中的 currentChildId:', storageChildId)
+    
     if (storageChildId && storageChildId !== this.data.currentChildId) {
       console.log('兑换历史页面检测到孩子切换:', storageChildId)
       this.setData({ currentChildId: storageChildId })
@@ -33,7 +44,9 @@ Page({
 
   // 加载孩子列表
   loadChildren() {
+    console.log('=== loadChildren 开始 ===')
     const db = wx.cloud.database()
+    console.log('familyId:', app.globalData.familyId)
 
     db.collection('children')
       .where({
@@ -43,8 +56,12 @@ Page({
       .orderBy('createTime', 'asc')
       .get({
         success: res => {
+          console.log('孩子列表查询成功:', res.data.length, '条记录')
+          console.log('孩子数据:', res.data)
+          
           if (res.data.length > 0) {
             if (!this.data.currentChildId) {
+              console.log('当前没有 childId，使用第一个孩子')
               this.setData({
                 children: res.data,
                 currentChildIndex: 0,
@@ -53,6 +70,7 @@ Page({
               setStorage('currentChildId', res.data[0]._id)
               app.globalData.currentChildId = res.data[0]._id
             } else {
+              console.log('当前已有 childId:', this.data.currentChildId)
               const index = res.data.findIndex(c => c._id === this.data.currentChildId)
               this.setData({
                 children: res.data,
@@ -60,9 +78,15 @@ Page({
               })
             }
             this.loadExchangeHistory()
+          } else {
+            console.log('没有找到孩子数据')
           }
+        },
+        fail: err => {
+          console.error('加载孩子列表失败:', err)
         }
       })
+    console.log('=== loadChildren 结束 ===')
   },
 
   // 切换时间周期
@@ -74,84 +98,53 @@ Page({
 
   // 加载兑换记录
   async loadExchangeHistory() {
+    console.log('=== loadExchangeHistory 开始 ===')
+    console.log('currentChildId:', this.data.currentChildId)
+    console.log('currentTimePeriod:', this.data.currentTimePeriod)
+    
     if (!this.data.currentChildId) {
+      console.warn('currentChildId 为空，无法加载兑换记录')
       this.setData({ loading: false })
       return
     }
 
     this.setData({ loading: true })
 
-    const { currentChildId, currentTimePeriod } = this.data
-    const db = wx.cloud.database()
-
-    // 计算日期范围
-    const now = new Date()
-    let startDate = new Date()
-
-    switch (currentTimePeriod) {
-      case 'week':
-        startDate = new Date(now)
-        startDate.setDate(now.getDate() - 7)
-        break
-      case 'month':
-        startDate = new Date(now)
-        startDate.setDate(now.getDate() - 30)
-        break
-      case 'all':
-      default:
-        startDate = new Date(0) // 不限
-        break
-    }
-
     try {
-      const res = await db.collection('reward_exchanges')
-        .where({
-          childId: currentChildId,
-          createTime: db.command.gte(startDate)
-        })
-        .orderBy('createTime', 'desc')
-        .get()
-
-      // 获取礼物信息
-      const rewardIds = [...new Set(res.data.map(item => item.rewardId))]
-      let rewardMap = {}
-
-      if (rewardIds.length > 0) {
-        const rewardRes = await db.collection('rewards')
-          .where({
-            _id: db.command.in(rewardIds)
-          })
-          .get()
-
-        rewardMap = rewardRes.data.reduce((map, reward) => {
-          map[reward._id] = reward
-          return map
-        }, {})
-      }
-
-      // 组装数据
-      const exchangeList = res.data.map(item => {
-        const reward = rewardMap[item.rewardId] || {}
-        const createTime = new Date(item.createTime)
-
-        return {
-          ...item,
-          rewardName: reward.name || '未知礼物',
-          rewardIcon: reward.icon || '🎁',
-          date: this.formatDate(createTime),
-          time: `${String(createTime.getHours()).padStart(2, '0')}:${String(createTime.getMinutes()).padStart(2, '0')}`,
-          statusText: item.status === 'completed' ? '已完成' : '进行中'
+      console.log('调用云函数 getExchangeHistory')
+      const res = await wx.cloud.callFunction({
+        name: 'getExchangeHistory',
+        data: {
+          childId: this.data.currentChildId,
+          timePeriod: this.data.currentTimePeriod
         }
       })
+      
+      console.log('云函数返回结果:', res)
+
+      if (!res.result.success) {
+        console.error('查询失败:', res.result.error)
+        this.setData({ loading: false })
+        wx.showToast({
+          title: res.result.error || '加载失败',
+          icon: 'none'
+        })
+        return
+      }
+
+      const exchangeList = res.result.data || []
+      console.log('兑换记录:', exchangeList)
 
       // 按日期分组
       const groupedHistory = this.groupByDate(exchangeList)
+      console.log('分组后的 groupedHistory:', groupedHistory)
 
       this.setData({
         exchangeList,
         groupedHistory,
         loading: false
       })
+      console.log('=== loadExchangeHistory 结束 ===')
     } catch (err) {
       console.error('加载兑换记录失败:', err)
       this.setData({ loading: false })

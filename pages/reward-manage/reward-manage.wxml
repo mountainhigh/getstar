@@ -1,49 +1,71 @@
 <view class="reward-manage">
   <!-- 页面头部 -->
-  <view class="page-header">
-    <text class="page-title">礼物管理</text>
-    <button class="btn-add" bindtap="addReward">
-      <text>+ 添加礼物</text>
-    </button>
+  <view class="header-section">
+    <view class="header-content">
+      <view class="header-info">
+        <text class="page-title">礼物管理</text>
+        <text class="page-subtitle">共 {{rewards.length}} 个礼物</text>
+      </view>
+      <button class="btn-add" bindtap="addReward">
+        <text class="btn-icon">+</text>
+        <text>添加</text>
+      </button>
+    </view>
   </view>
 
   <!-- 礼物列表 -->
   <view class="reward-list">
     <view
-      class="reward-item card"
+      class="reward-item"
       wx:for="{{rewards}}"
       wx:key="_id">
-      <view class="reward-icon" style="background: {{item.color || '#FF6B6B'}};">
-        <text>{{item.icon}}</text>
-      </view>
-      <view class="reward-info">
-        <text class="reward-name">{{item.name}}</text>
-        <text class="reward-cost">💰 {{item.cost}} 金币</text>
-        <text class="reward-category">{{item.category}}</text>
+      <view class="reward-main">
+        <view class="reward-icon" style="background: {{item.color || '#FF6B6B'}};">
+          <text class="icon-text">{{item.icon || item.name[0]}}</text>
+        </view>
+        <view class="reward-info">
+          <text class="reward-name">{{item.name}}</text>
+          <view class="reward-meta">
+            <text class="reward-category">{{item.category || '其他'}}</text>
+            <view class="reward-cost">
+              <text class="cost-icon">◆</text>
+              <text class="cost-value">{{item.cost || item.coinCost || item.coinsRequired || 0}}</text>
+            </view>
+          </view>
+        </view>
       </view>
       <view class="reward-actions">
         <button
           class="btn-action btn-edit"
           catchtap="editReward"
           data-id="{{item._id}}">
-          <text>编辑</text>
+          <text>✎</text>
         </button>
         <button
           class="btn-action btn-delete"
           catchtap="deleteReward"
           data-id="{{item._id}}">
-          <text>删除</text>
+          <text>✕</text>
         </button>
       </view>
     </view>
 
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{rewards.length === 0 && !loading}}">
-      <text class="empty-icon">🎁</text>
-      <text class="empty-text">还没有礼物,快去添加吧</text>
-      <button class="btn btn-primary mt-30" bindtap="addReward">
+      <view class="empty-icon-bg">
+        <text class="empty-icon">🎁</text>
+      </view>
+      <text class="empty-title">还没有礼物</text>
+      <text class="empty-desc">点击右上角添加按钮创建第一个礼物</text>
+      <button class="btn-empty-add" bindtap="addReward">
         添加第一个礼物
       </button>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
     </view>
   </view>
 
@@ -53,68 +75,98 @@
     <view class="modal-content">
       <view class="modal-header">
         <text class="modal-title">{{isEdit ? '编辑礼物' : '添加礼物'}}</text>
-        <text class="modal-close" bindtap="closeModal">✕</text>
+        <view class="modal-close" bindtap="closeModal">✕</view>
       </view>
-      <view class="modal-body">
+      <scroll-view class="modal-body" scroll-y enhanced show-scrollbar="{{false}}">
+        <!-- 礼物名称 -->
         <view class="form-group">
           <text class="form-label">礼物名称 *</text>
           <input
             class="form-input"
-            placeholder="请输入礼物名称"
+            placeholder="请输入礼物名称，如：冰淇淋"
             value="{{form.name}}"
             bindinput="onInputChange"
             data-field="name"
             maxlength="20" />
         </view>
 
+        <!-- 金币数量 -->
         <view class="form-group">
-          <text class="form-label">金币数量 *</text>
-          <input
-            class="form-input"
-            type="number"
-            placeholder="请输入金币数量"
-            value="{{form.cost}}"
-            bindinput="onInputChange"
-            data-field="cost" />
+          <text class="form-label">所需金币 *</text>
+          <view class="points-input-wrapper">
+            <button class="btn-minus" bindtap="adjustCost" data-delta="-5">-</button>
+            <input
+              class="points-input"
+              type="number"
+              value="{{form.cost}}"
+              bindinput="onCostInput"
+              placeholder="0" />
+            <button class="btn-plus" bindtap="adjustCost" data-delta="5">+</button>
+          </view>
         </view>
 
+        <!-- 分类 -->
         <view class="form-group">
           <text class="form-label">分类 *</text>
-          <picker
-            mode="selector"
-            range="{{categories}}"
-            bindchange="onCategoryChange">
-            <view class="form-picker">
-              <text>{{categories[form.categoryIndex] || '请选择分类'}}</text>
-              <text class="picker-arrow">▼</text>
+          <view class="category-grid">
+            <view
+              class="category-option {{form.category === item ? 'active' : ''}}"
+              wx:for="{{categories}}"
+              wx:key="*this"
+              bindtap="selectCategory"
+              data-category="{{item}}">
+              <text>{{item}}</text>
             </view>
-          </picker>
+          </view>
         </view>
 
+        <!-- 图标 -->
         <view class="form-group">
           <text class="form-label">图标 *</text>
           <view class="icon-grid">
             <view
-              class="icon-item {{form.icon === item ? 'selected' : ''}}"
+              class="icon-option {{form.icon === item ? 'active' : ''}}"
               wx:for="{{icons}}"
-              wx:for-item="icon"
               wx:key="*this"
               bindtap="selectIcon"
-              data-icon="{{icon}}">
-              <text>{{icon}}</text>
+              data-icon="{{item}}">
+              <text>{{item}}</text>
             </view>
           </view>
         </view>
-      </view>
+
+        <!-- 颜色 -->
+        <view class="form-group">
+          <text class="form-label">颜色 *</text>
+          <view class="color-grid">
+            <view
+              class="color-option {{form.color === item ? 'active' : ''}}"
+              wx:for="{{colors}}"
+              wx:key="*this"
+              style="background: {{item}};"
+              bindtap="selectColor"
+              data-color="{{item}}">
+              <text class="check-mark" wx:if="{{form.color === item}}">✓</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 描述 -->
+        <view class="form-group">
+          <text class="form-label">描述</text>
+          <textarea
+            class="form-textarea"
+            placeholder="请输入礼物描述（可选）"
+            value="{{form.description}}"
+            bindinput="onInputChange"
+            data-field="description"
+            maxlength="100" />
+        </view>
+      </scroll-view>
       <view class="modal-footer">
-        <button class="btn btn-secondary" bindtap="closeModal">取消</button>
-        <button class="btn btn-primary" bindtap="saveReward">确定</button>
+        <button class="btn btn-cancel" bindtap="closeModal">取消</button>
+        <button class="btn btn-save" bindtap="saveReward">保存</button>
       </view>
     </view>
-  </view>
-
-  <!-- 加载状态 -->
-  <view class="loading" wx:if="{{loading}}">
-    <text>加载中...</text>
   </view>
 </view>

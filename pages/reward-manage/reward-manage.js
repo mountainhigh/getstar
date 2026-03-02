@@ -9,29 +9,65 @@ Page({
     currentRewardId: '',
     form: {
       name: '',
-      cost: '',
-      categoryIndex: 0,
-      icon: '🎁'
+      cost: '50',
+      category: '美食',
+      icon: '★',
+      color: '#FF6B6B',
+      description: ''
     },
-    categories: ['美食', '娱乐', '活动', '学习', '玩具'],
-    icons: ['🎁', '🍦', '🎮', '📺', '🎡', '📚', '🎨', '🚗', '🎢', '🚲']
+    categories: ['美食', '娱乐', '活动', '学习', '玩具', '其他'],
+    icons: ['🍰', '🍦', '🧸', '🎮', '🎬', '🎡', '🌟', '🎁', '🎀', '🎈', '🎪', '🎠', '🎨', '🎭', '🎯', '🎲', '🎳', '🎵', '🎶', '🎼'],
+    colors: ['#FF6B6B', '#FF8E53', '#4ECDC4', '#44A8B0', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F']
   },
 
   onLoad() {
+    console.log('=== 礼物管理页面 onLoad ===')
+    console.log('familyId:', app.globalData.familyId)
+    this.loadRewards()
+  },
+
+  onShow() {
+    console.log('=== 礼物管理页面 onShow ===')
     this.loadRewards()
   },
 
   // 加载礼物列表
   async loadRewards() {
+    console.log('=== loadRewards 开始 ===')
     this.setData({ loading: true })
 
     try {
       const db = wx.cloud.database()
-      const res = await db.collection('rewards').get()
 
-      this.setData({
-        rewards: res.data,
-        loading: false
+      // 直接调用云函数，不再需要 familyId
+      wx.cloud.callFunction({
+        name: 'getRewardList',
+        success: res => {
+          if (res.result && res.result.success) {
+            console.log('礼物列表查询成功:', res.result.data.length, '条记录')
+            console.log('礼物数据:', res.result.data)
+
+            this.setData({
+              rewards: res.result.data,
+              loading: false
+            })
+          } else {
+            console.error('获取礼物列表失败:', res.result)
+            this.setData({ loading: false })
+            wx.showToast({
+              title: res.result?.message || '加载失败',
+              icon: 'none'
+            })
+          }
+        },
+        fail: err => {
+          console.error('调用云函数失败:', err)
+          this.setData({ loading: false })
+          wx.showToast({
+            title: '加载失败',
+            icon: 'none'
+          })
+        }
       })
     } catch (err) {
       console.error('加载礼物列表失败:', err)
@@ -48,11 +84,14 @@ Page({
     this.setData({
       showModal: true,
       isEdit: false,
+      currentRewardId: '',
       form: {
         name: '',
-        cost: '',
-        categoryIndex: 0,
-        icon: '🎁'
+        cost: '50',
+        category: '美食',
+        icon: '★',
+        color: '#FF6B6B',
+        description: ''
       }
     })
   },
@@ -63,17 +102,17 @@ Page({
     const reward = this.data.rewards.find(r => r._id === rewardId)
 
     if (reward) {
-      const categoryIndex = this.data.categories.indexOf(reward.category)
-
       this.setData({
         showModal: true,
         isEdit: true,
         currentRewardId: rewardId,
         form: {
-          name: reward.name,
-          cost: reward.cost,
-          categoryIndex: categoryIndex >= 0 ? categoryIndex : 0,
-          icon: reward.icon
+          name: reward.name || '',
+          cost: String(reward.cost || reward.coinCost || reward.coinsRequired || '50'),
+          category: reward.category || '美食',
+          icon: reward.icon || '★',
+          color: reward.color || '#FF6B6B',
+          description: reward.description || ''
         }
       })
     }
@@ -94,10 +133,38 @@ Page({
     })
   },
 
-  // 选择分类
-  onCategoryChange(e) {
+  // 金币输入
+  onCostInput(e) {
+    let value = e.detail.value
+    // 只允许数字
+    value = value.replace(/[^0-9]/g, '')
+    // 限制最大值
+    const numValue = parseInt(value) || 0
+    if (numValue > 99999) {
+      value = '99999'
+    }
     this.setData({
-      'form.categoryIndex': e.detail.value
+      'form.cost': value
+    })
+  },
+
+  // 调整金币
+  adjustCost(e) {
+    const delta = parseInt(e.currentTarget.dataset.delta)
+    let currentCost = parseInt(this.data.form.cost) || 0
+    currentCost += delta
+    if (currentCost < 0) currentCost = 0
+    if (currentCost > 99999) currentCost = 99999
+    this.setData({
+      'form.cost': String(currentCost)
+    })
+  },
+
+  // 选择分类
+  selectCategory(e) {
+    const category = e.currentTarget.dataset.category
+    this.setData({
+      'form.category': category
     })
   },
 
@@ -109,9 +176,17 @@ Page({
     })
   },
 
+  // 选择颜色
+  selectColor(e) {
+    const color = e.currentTarget.dataset.color
+    this.setData({
+      'form.color': color
+    })
+  },
+
   // 保存礼物
   async saveReward() {
-    const { name, cost, categoryIndex, icon } = this.data.form
+    const { name, cost, category, icon, color, description } = this.data.form
 
     // 表单验证
     if (!name || !name.trim()) {
@@ -122,41 +197,44 @@ Page({
       return
     }
 
-    if (!cost || cost <= 0) {
+    const costValue = parseInt(cost) || 0
+    if (costValue <= 0) {
       wx.showToast({
-        title: '请输入有效的金币数量',
+        title: '金币数量必须大于0',
         icon: 'none'
       })
       return
     }
 
-    const category = this.data.categories[categoryIndex]
-
     try {
       wx.showLoading({ title: '保存中...' })
 
-      const db = wx.cloud.database()
+      const rewardData = {
+        name: name.trim(),
+        cost: costValue,
+        category: category,
+        icon: icon,
+        color: color,
+        description: description.trim()
+      }
 
       if (this.data.isEdit) {
         // 编辑礼物
-        await db.collection('rewards').doc(this.data.currentRewardId).update({
+        await wx.cloud.callFunction({
+          name: 'saveReward',
           data: {
-            name: name.trim(),
-            cost: parseInt(cost),
-            category: category,
-            icon: icon
+            rewardId: this.data.currentRewardId,
+            rewardData: rewardData,
+            isEdit: true
           }
         })
       } else {
         // 添加礼物
-        await db.collection('rewards').add({
+        await wx.cloud.callFunction({
+          name: 'saveReward',
           data: {
-            name: name.trim(),
-            cost: parseInt(cost),
-            category: category,
-            icon: icon,
-            stock: 999, // 默认库存
-            createTime: new Date()
+            rewardData: rewardData,
+            isEdit: false
           }
         })
       }
@@ -182,10 +260,11 @@ Page({
   // 删除礼物
   deleteReward(e) {
     const rewardId = e.currentTarget.dataset.id
+    const reward = this.data.rewards.find(r => r._id === rewardId)
 
     wx.showModal({
       title: '确认删除',
-      content: '确定要删除这个礼物吗？',
+      content: `确定要删除礼物"${reward ? reward.name : ''}"吗？`,
       confirmText: '删除',
       confirmColor: '#FF6B6B',
       success: async res => {
@@ -193,16 +272,28 @@ Page({
           try {
             wx.showLoading({ title: '删除中...' })
 
-            const db = wx.cloud.database()
-            await db.collection('rewards').doc(rewardId).remove()
-
-            wx.hideLoading()
-            wx.showToast({
-              title: '删除成功',
-              icon: 'success'
+            // 使用云函数删除礼物
+            const deleteRes = await wx.cloud.callFunction({
+              name: 'deleteReward',
+              data: {
+                rewardId: rewardId
+              }
             })
 
-            this.loadRewards()
+            wx.hideLoading()
+
+            if (deleteRes.result && deleteRes.result.success) {
+              wx.showToast({
+                title: '删除成功',
+                icon: 'success'
+              })
+              this.loadRewards()
+            } else {
+              wx.showToast({
+                title: deleteRes.result.error || '删除失败',
+                icon: 'none'
+              })
+            }
           } catch (err) {
             wx.hideLoading()
             console.error('删除礼物失败:', err)

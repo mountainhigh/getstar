@@ -43,13 +43,9 @@
         <view class="exchange-info">
           <text class="exchange-name">{{record.rewardName}}</text>
           <view class="exchange-meta">
-            <text class="exchange-time">{{record.time}}</text>
             <text class="exchange-cost">💰 {{record.cost}} 金币</text>
+            <text class="exchange-time">{{record.datetime}}</text>
           </view>
-        </view>
-        <view
-          class="exchange-status {{record.status}}">
-          <text>{{record.statusText}}</text>
         </view>
       </view>
     </view>

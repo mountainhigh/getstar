@@ -6,7 +6,7 @@ cloud.init({
 const db = cloud.database()
 
 exports.main = async (event, context) => {
-  const tables = ['check_ins', 'children', 'habits', 'users', 'rewards', 'families', 'reward_records', 'leaderboard']
+  const tables = ['check_ins', 'children', 'habits', 'users', 'rewards', 'families', 'reward_exchanges', 'leaderboard']
   const stats = {}
   let totalRecords = 0
 

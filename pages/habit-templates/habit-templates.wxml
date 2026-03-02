@@ -28,8 +28,8 @@
         <text class="template-name">{{item.name}}</text>
         <text class="template-points">{{item.points}}星星</text>
       </view>
-      <view class="template-check">
-        <text class="check-icon">{{item.selected ? '✓' : '+'}}</text>
+      <view class="template-check {{item.alreadyAdded ? 'added' : ''}}">
+        <text class="check-icon">{{item.alreadyAdded ? '✓' : (item.selected ? '✓' : '+')}}</text>
       </view>
     </view>
   </view>

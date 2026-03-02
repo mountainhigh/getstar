@@ -61,11 +61,11 @@ Page({
       
       this.setData({ hasFamily: true });
 
-      // 加载孩子列表（添加 openid 条件）
+      // 加载孩子列表（只使用 familyId，移除 openid 条件）
       const db = wx.cloud.database();
       const res = await db.collection('children').where({
         familyId: app.globalData.familyId,
-        openid: app.globalData.openid
+        isDeleted: false
       }).orderBy('createTime', 'asc').get();
 
       this.setData({ childrenList: res.data });
@@ -218,7 +218,13 @@ Page({
       showLoading('删除中...');
       
       const db = wx.cloud.database();
-      await db.collection('children').doc(childId).remove();
+      // 软删除：更新 isDeleted 字段为 true
+      await db.collection('children').doc(childId).update({
+        data: {
+          isDeleted: true,
+          updateTime: db.serverDate()
+        }
+      });
       
       // 如果删除的是当前选中的孩子,切换到第一个孩子
       if (childId === this.data.currentChildId) {
@@ -295,6 +301,7 @@ Page({
             points: 0,
             coins: 0,
             level: 1,
+            isDeleted: false,
             createTime: db.serverDate()
           }
         });
@@ -393,6 +400,75 @@ Page({
       title: '关于 GetStar',
       content: 'GetStar - 儿童行为激励管理小程序\n帮助孩子养成好习惯',
       showCancel: false
+    });
+  },
+
+  /**
+   * 修复 children 表的 isDeleted 字段（临时函数）
+   */
+  async fixChildrenIsDeleted() {
+    wx.showModal({
+      title: '修复数据',
+      content: '为所有孩子记录添加 isDeleted 字段，是否继续？',
+      confirmText: '确定',
+      confirmColor: '#4CAF50',
+      success: async (res) => {
+        if (!res.confirm) {
+          return;
+        }
+
+        try {
+          wx.showLoading({
+            title: '修复中...',
+            mask: true
+          });
+
+          console.log('调用 fixChildrenIsDeleted 云函数');
+          
+          const cloudRes = await wx.cloud.callFunction({
+            name: 'fixChildrenIsDeleted'
+          });
+
+          console.log('云函数返回结果:', cloudRes);
+
+          wx.hideLoading();
+
+          if (cloudRes.result && cloudRes.result.success) {
+            const { total, updated, skipped } = cloudRes.result.data;
+            
+            wx.showModal({
+              title: '修复完成',
+              content: `共查询 ${total} 条记录\n更新 ${updated} 条记录\n跳过 ${skipped} 条记录`,
+              showCancel: false,
+              success: () => {
+                this.loadFamilyData();
+              }
+            });
+          } else {
+            wx.showToast({
+              title: cloudRes.result?.message || '修复失败',
+              icon: 'none'
+            });
+          }
+        } catch (err) {
+          wx.hideLoading();
+          console.error('调用云函数失败:', err);
+          wx.showModal({
+            title: '调用失败',
+            content: '请先部署 fixChildrenIsDeleted 云函数\n\n错误信息: ' + (err.errMsg || err.message),
+            showCancel: false
+          });
+        }
+      }
+    });
+  },
+
+  /**
+   * 测试礼物系统
+   */
+  testRewards() {
+    wx.navigateTo({
+      url: '/pages/test-reward/test-reward'
     });
   },
 

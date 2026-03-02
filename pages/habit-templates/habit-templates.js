@@ -8,13 +8,13 @@ Page({
       { id: 'all', name: '全部' },
       { id: 'study', name: '学习' },
       { id: 'life', name: '生活' },
-      { id: 'sports', name: '运动' },
-      { id: 'manners', name: '礼仪' },
-      { id: 'labor', name: '劳动' }
+      { id: 'exercise', name: '运动' },
+      { id: 'habit', name: '习惯' },
+      { id: 'social', name: '社交' }
     ],
     templates: [],
     filteredTemplates: [],
-    selectedTemplates: new Set(),
+    selectedTemplates: [],
     selectedCount: 0,
     childId: ''
   },
@@ -35,6 +35,40 @@ Page({
 
     this.setData({ childId });
     this.loadTemplates();
+    this.loadChildHabits();
+  },
+
+  /**
+   * 加载孩子已有的习惯
+   */
+  async loadChildHabits() {
+    try {
+      const { childId } = this.data;
+      if (!childId) return;
+
+      const db = wx.cloud.database();
+      const res = await db.collection('habits').where({
+        childId: childId,
+        isActive: true
+      }).get();
+
+      // 获取已使用的模板ID列表
+      const existingTemplateIds = res.data.map(h => h.templateId).filter(id => id);
+      console.log('孩子已有的习惯模板ID:', existingTemplateIds);
+
+      // 更新模板列表，标记已存在的
+      const templates = this.data.templates.map(t => ({
+        ...t,
+        alreadyAdded: existingTemplateIds.includes(t.id) || existingTemplateIds.includes(t._id)
+      }));
+
+      this.setData({ 
+        templates,
+        filteredTemplates: templates 
+      });
+    } catch (err) {
+      console.error('加载孩子习惯失败:', err);
+    }
   },
 
   /**
@@ -100,9 +134,29 @@ Page({
   filterTemplates() {
     const { templates, currentCategory } = this.data;
     
+    console.log('=== 过滤模板调试 ===');
+    console.log('当前选中分类:', currentCategory);
+    console.log('所有模板数量:', templates.length);
+    
+    // 显示所有模板的分类值
+    const allCategories = templates.map(t => ({ name: t.name, category: t.category }));
+    console.log('所有模板详情:', JSON.stringify(allCategories, null, 2));
+    
+    // 统计各分类数量
+    const categoryCount = {};
+    templates.forEach(t => {
+      categoryCount[t.category] = (categoryCount[t.category] || 0) + 1;
+    });
+    console.log('各分类数量:', categoryCount);
+    
     let filtered = templates;
     if (currentCategory !== 'all') {
-      filtered = templates.filter(t => t.category === currentCategory);
+      filtered = templates.filter(t => {
+        const match = t.category === currentCategory;
+        console.log(`比较: 模板"${t.name}"的分类"${t.category}" === 当前"${currentCategory}" ? ${match}`);
+        return match;
+      });
+      console.log('过滤后数量:', filtered.length);
     }
     
     this.setData({ filteredTemplates: filtered });
@@ -113,22 +167,31 @@ Page({
    */
   toggleTemplate(e) {
     const templateId = e.currentTarget.dataset.id;
-    const selectedTemplates = new Set(this.data.selectedTemplates);
+    const template = this.data.filteredTemplates.find(t => t.id === templateId);
+    
+    // 如果已经添加过，不允许选择
+    if (template && template.alreadyAdded) {
+      showToast('该习惯已添加');
+      return;
+    }
 
-    if (selectedTemplates.has(templateId)) {
-      selectedTemplates.delete(templateId);
+    let selectedTemplates = [...this.data.selectedTemplates];
+
+    const index = selectedTemplates.indexOf(templateId);
+    if (index > -1) {
+      selectedTemplates.splice(index, 1);
     } else {
-      selectedTemplates.add(templateId);
+      selectedTemplates.push(templateId);
     }
 
     const filteredTemplates = this.data.filteredTemplates.map(t => ({
       ...t,
-      selected: selectedTemplates.has(t._id)
+      selected: selectedTemplates.includes(t.id)
     }));
 
     this.setData({
       selectedTemplates,
-      selectedCount: selectedTemplates.size,
+      selectedCount: selectedTemplates.length,
       filteredTemplates
     });
   },
@@ -155,13 +218,16 @@ Page({
 
       for (const templateId of selectedTemplates) {
         try {
-          const template = templates.find(t => t._id === templateId);
-          if (!template) continue;
+          const template = templates.find(t => t.id === templateId || t._id === templateId);
+          if (!template) {
+            console.log('未找到模板:', templateId);
+            continue;
+          }
 
           const result = await db.collection('habits').add({
             data: {
               childId,
-              templateId: template._id,
+              templateId: template.id,
               name: template.name,
               icon: template.icon,
               category: template.category,
