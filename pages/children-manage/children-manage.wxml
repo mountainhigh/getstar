@@ -92,16 +92,6 @@
 
     <!-- 设置入口 -->
     <view class="settings-section">
-      <view class="settings-item" bindtap="fixChildrenIsDeleted">
-        <text class="settings-icon">🔧</text>
-        <text class="settings-text">修复孩子数据（临时）</text>
-        <text class="settings-arrow">›</text>
-      </view>
-      <view class="settings-item" bindtap="testRewards">
-        <text class="settings-icon">🧪</text>
-        <text class="settings-text">测试礼物系统（临时）</text>
-        <text class="settings-arrow">›</text>
-      </view>
       <view class="settings-item" bindtap="showHelp">
         <text class="settings-icon">❓</text>
         <text class="settings-text">使用帮助</text>

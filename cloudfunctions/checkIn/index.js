@@ -69,13 +69,17 @@ exports.main = async (event, context) => {
     const habit = habitRes.data;
     const childId = habit.childId;
 
-    // 检查今日是否已打卡
+    // 使用东八区时间计算今天的日期
     const today = new Date();
-    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
+    const beijingTimestamp = today.getTime() + (8 * 60 * 60 * 1000); // 东八区 = UTC+8，加8小时
+    const beijingTime = new Date(beijingTimestamp);
+    const dateStr = `${beijingTime.getFullYear()}-${String(beijingTime.getMonth() + 1).padStart(2, '0')}-${String(beijingTime.getDate()).padStart(2, '0')}`;
+
     console.log('云函数检查今日打卡:');
     console.log('habitId:', habitId);
     console.log('childId:', childId);
+    console.log('UTC 时间:', today.toISOString());
+    console.log('东八区时间:', beijingTime.toISOString());
     console.log('dateStr:', dateStr);
     
     const checkRes = await db.collection('check_ins').where({
@@ -139,6 +143,7 @@ exports.main = async (event, context) => {
         coins: points,
         photos: photos || [],
         remark: remark || '',
+        _openid: wxContext.OPENID,
         createTime: db.serverDate()
       }
     });

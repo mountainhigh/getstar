@@ -4,7 +4,7 @@
     <view class="welcome-card card">
       <text class="welcome-icon">{{isNewUser ? '👋' : '👶'}}</text>
       <text class="welcome-title">{{isNewUser ? '欢迎使用 GetStar' : '添加孩子'}}</text>
-      <text class="welcome-desc">{{isNewUser ? '添加孩子的信息,系统将自动为您添加25个精选习惯模板' : '还没有添加孩子,快来添加第一个孩子吧'}}</text>
+      <text class="welcome-desc">{{isNewUser ? '添加孩子的信息,系统将自动为您添加10个精选习惯模板' : '还没有添加孩子,快来添加第一个孩子吧'}}</text>
       <button class="btn btn-primary mt-30" bindtap="addFirstChild">添加孩子</button>
     </view>
   </view>
@@ -35,8 +35,8 @@
     <view class="points-header">
       <view class="points-left">
         <view class="points-title">
-          <text class="points-label">星星</text>
           <text class="points-value">{{currentChild.points}}</text>
+          <text class="points-label">星星</text>
         </view>
         <view class="level-badge">
           <text class="level-badge-icon">⭐</text>

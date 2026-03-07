@@ -45,18 +45,6 @@ exports.main = async (event, context) => {
       };
     }
 
-    const user = userRes.data[0];
-
-    // 查询孩子所属家庭
-    const childRes = await db.collection('children').doc(checkInRecord.childId).get();
-
-    if (!childRes.data || childRes.data.familyId !== user.familyId) {
-      return {
-        success: false,
-        message: '无权撤销此打卡'
-      };
-    }
-
     // 检查是否在24小时内
     const createTime = new Date(checkInRecord.createTime);
     const now = new Date();
@@ -106,8 +94,8 @@ exports.main = async (event, context) => {
       await db.collection('coin_records').add({
         data: {
           childId: checkInRecord.childId,
-          childName: childRes.data.name,
-          familyId: user.familyId,
+          childName: currentChildRes.data.name,
+          familyId: currentChildRes.data.familyId,
           amount: -pointsToDeduct,
           type: 'undo_checkin',
           description: '撤销打卡',

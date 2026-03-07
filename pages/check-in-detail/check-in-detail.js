@@ -160,12 +160,18 @@ Page({
         return;
       }
 
-      // 检查今日是否已打卡
-      const today = formatDate(new Date(), 'YYYY-MM-DD');
+      // 检查今日是否已打卡（使用东八区时间）
+      const now = new Date();
+      const beijingTimestamp = now.getTime();
+      const beijingTime = new Date(beijingTimestamp);
+      const today = `${beijingTime.getUTCFullYear()}-${String(beijingTime.getUTCMonth() + 1).padStart(2, '0')}-${String(beijingTime.getUTCDate()).padStart(2, '0')}`;
+
       const db = wx.cloud.database();
-      
+
       console.log('=== 打卡详情页检查今日是否已打卡 ===');
       console.log('habitId:', habit._id);
+      console.log('UTC 时间:', now.toISOString());
+      console.log('东八区时间:', beijingTime.toISOString());
       console.log('date:', today);
       console.log('查询条件:', { habitId: habit._id, date: today });
       console.log('查询条件类型:', { habitIdType: typeof habit._id, dateType: typeof today });

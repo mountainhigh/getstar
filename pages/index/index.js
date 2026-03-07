@@ -212,26 +212,56 @@ Page({
     try {
       if (!this.data.currentChildId) return;
 
-      const today = formatDate(new Date(), 'YYYY-MM-DD');
+      // 使用东八区时间计算今天的日期
+      const now = new Date();
+      const beijingTimestamp = now.getTime() + (8 * 60 * 60 * 1000);
+      const beijingTime = new Date(beijingTimestamp);
+
+      const year = beijingTime.getUTCFullYear();
+      const month = String(beijingTime.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(beijingTime.getUTCDate()).padStart(2, '0');
+      const today = `${year}-${month}-${day}`;
+
       const db = wx.cloud.database();
+
+      console.log('=== 检查今日打卡状态 ===');
+      console.log('当前 UTC 时间戳:', now.getTime());
+      console.log('UTC 时间:', now.toISOString());
+      console.log('东八区时间戳:', beijingTimestamp);
+      console.log('东八区时间:', beijingTime.toISOString());
+      console.log('currentChildId:', this.data.currentChildId);
+      console.log('today:', today);
+      console.log('东八区年月日:', year, month, day);
 
       const res = await db.collection('check_ins').where({
         childId: this.data.currentChildId,
         date: today
       }).get();
 
+      console.log('check_ins 查询结果:', res.data);
+      console.log('check_ins 数量:', res.data.length);
+
       const checkedHabitIds = res.data.map(item => item.habitId);
+      console.log('已打卡的 habitIds:', checkedHabitIds);
+
+      console.log('原始 habits:', this.data.habits);
+
       const habits = this.data.habits.map(habit => ({
         ...habit,
         todayChecked: checkedHabitIds.includes(habit._id)
       }));
 
+      console.log('处理后的 habits:', habits);
+
       const completedCount = habits.filter(h => h.todayChecked).length;
+      console.log('已完成数量:', completedCount);
 
       this.setData({
         habits,
         completedCount
       });
+
+      console.log('=== 检查今日打卡状态结束 ===');
     } catch (err) {
       console.error('检查打卡状态失败:', err);
       // 如果集合不存在,静默处理
@@ -320,7 +350,7 @@ Page({
           const currentPoints = levels[i].points;
           const nextPoints = nextLevel.points;
           progress = ((points - currentPoints) / (nextPoints - currentPoints)) * 100;
-          progress = Math.min(100, Math.max(0, progress));
+          progress = Math.min(100, Math.max(0, Math.round(progress)));
         }
       }
     }

@@ -127,7 +127,7 @@ async function calculateConsecutiveDays(childId) {
     // 查询最近30天的打卡记录
     const startDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const checkInRes = await db.collection('check_in_records').where({
+    const checkInRes = await db.collection('check_ins').where({
       childId: childId,
       createTime: _.gte(startDate)
     }).get();
