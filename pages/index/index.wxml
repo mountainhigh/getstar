@@ -1,9 +1,27 @@
-<view class="container">
+<view class="welcome-page" wx:if="{{isLoading}}">
+  <view class="welcome-content">
+    <view class="app-logo">⭐</view>
+    <view class="app-name">我要攒星星</view>
+    <view class="app-slogan">让好习惯成为自然</view>
+    
+    <view class="loading-container" wx:if="{{!showError}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">{{loadingText}}</text>
+    </view>
+
+    <view class="error-container" wx:if="{{showError}}">
+      <text class="error-text">加载失败，请检查网络</text>
+      <button class="retry-btn" bindtap="retryInit">重试</button>
+    </view>
+  </view>
+</view>
+
+<view class="container" wx:if="{{!isLoading}}">
   <!-- 没有孩子时显示添加界面 -->
   <view class="welcome-section" wx:if="{{childrenList.length === 0}}">
     <view class="welcome-card card">
       <text class="welcome-icon">{{isNewUser ? '👋' : '👶'}}</text>
-      <text class="welcome-title">{{isNewUser ? '欢迎使用 GetStar' : '添加孩子'}}</text>
+      <text class="welcome-title">{{isNewUser ? '欢迎使用 我要攒星星' : '添加孩子'}}</text>
       <text class="welcome-desc">{{isNewUser ? '添加孩子的信息,系统将自动为您添加10个精选习惯模板' : '还没有添加孩子,快来添加第一个孩子吧'}}</text>
       <button class="btn btn-primary mt-30" bindtap="addFirstChild">添加孩子</button>
     </view>
@@ -19,8 +37,8 @@
             bindtap="switchChild"
             data-id="{{item._id}}">
         <view class="child-avatar">
-          <text class="avatar-emoji" wx:if="{{item.avatar}}">{{item.avatar}}</text>
-          <image wx:else src="/images/default-avatar.png" mode="aspectFill"></image>
+          <image wx:if="{{item.avatarType === 'image' || (item.avatar && item.avatar.length > 4)}}" src="{{item.avatar}}" mode="aspectFill" class="avatar-image"></image>
+          <text wx:else class="avatar-emoji">{{item.avatar || '👶'}}</text>
         </view>
         <view class="child-info">
           <text class="child-name">{{item.name}}</text>
@@ -167,14 +185,27 @@
         <text class="form-label">选择头像</text>
         <view class="avatar-list">
           <view
-            class="avatar-option {{item === childForm.avatar ? 'active' : ''}}"
+            class="avatar-option {{item.value === childForm.avatar ? 'active' : ''}}"
             wx:for="{{avatarList}}"
             wx:for-index="index"
             wx:key="index"
             bindtap="selectAvatar"
-            data-avatar="{{item}}">
-            <text class="avatar-emoji">{{item}}</text>
+            data-avatar="{{item.value}}"
+            data-type="{{item.type}}">
+            <image wx:if="{{item.type === 'image'}}" src="{{item.value}}" class="avatar-img-small"></image>
+            <text wx:else class="avatar-emoji">{{item.value}}</text>
           </view>
+          
+          <!-- 自定义上传按钮 -->
+          <view class="avatar-option upload-btn {{childForm.avatarType === 'image' && (childForm.avatar.startsWith('http') || childForm.avatar.startsWith('wxfile')) ? 'active' : ''}}" bindtap="chooseImage">
+            <text class="upload-icon">📷</text>
+          </view>
+        </view>
+        
+        <!-- 当前选中预览 -->
+        <view class="avatar-preview" wx:if="{{childForm.avatarType === 'image'}}">
+          <text class="preview-label">当前预览:</text>
+          <image src="{{childForm.avatar}}" mode="aspectFill" class="preview-image"></image>
         </view>
       </view>
 

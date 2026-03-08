@@ -1,3 +1,98 @@
+/* 欢迎页面 */
+.welcome-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #FFFFFF;
+}
+
+.app-logo {
+  font-size: 160rpx;
+  margin-bottom: 40rpx;
+  animation: bounce 2s infinite;
+}
+
+.app-name {
+  font-size: 60rpx;
+  font-weight: 800;
+  letter-spacing: 4rpx;
+  margin-bottom: 20rpx;
+  text-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+}
+
+.app-slogan {
+  font-size: 32rpx;
+  opacity: 0.9;
+  margin-bottom: 100rpx;
+  letter-spacing: 2rpx;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  opacity: 0.8;
+}
+
+.error-container {
+  margin-top: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: #FFE5E5;
+}
+
+.retry-btn {
+  background: #FFFFFF;
+  color: #FF6B6B;
+  font-size: 28rpx;
+  padding: 10rpx 40rpx;
+  border-radius: 30rpx;
+  font-weight: 600;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20rpx); }
+}
+
 /* 欢迎区域 */
 .welcome-section {
   padding: 40rpx;
@@ -694,3 +789,44 @@
   background: #F8F9FA;
 }
 
+/* 新增样式 */
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-img-small {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+}
+
+.upload-btn {
+  background: #F0F0F0;
+  border: 2rpx dashed #CCC;
+}
+
+.upload-icon {
+  font-size: 50rpx;
+}
+
+.avatar-preview {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  justify-content: center;
+}
+
+.preview-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.preview-image {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  border: 4rpx solid #FF6B6B;
+}

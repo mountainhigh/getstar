@@ -137,7 +137,8 @@
           bindtap="selectChild"
           data-index="{{index}}">
           <view class="picker-avatar" style="background: {{item.color || '#FF6B6B'}};">
-            <text>{{item.name[0]}}</text>
+            <image wx:if="{{item.avatarType === 'image' || (item.avatar && item.avatar.length > 4)}}" src="{{item.avatar}}" mode="aspectFill" class="avatar-image"></image>
+            <text wx:else>{{item.avatar || '👶'}}</text>
           </view>
           <view class="picker-info">
             <text class="picker-name">{{item.name}}</text>

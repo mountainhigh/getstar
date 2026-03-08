@@ -84,6 +84,7 @@ exports.main = async (event, context) => {
         childId: child._id,
         childName: child.name,
         avatar: child.avatar,
+        avatarType: child.avatarType,
         totalPoints: totalPoints,
         checkInCount: checkInCount,
         consecutiveDays: consecutiveDays,

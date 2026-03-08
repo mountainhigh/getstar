@@ -44,7 +44,8 @@
           wx:for="{{childrenList}}"
           wx:key="_id">
           <view class="child-avatar" bindtap="editChild" data-id="{{item._id}}">
-            <text class="avatar-emoji-display">{{item.avatar || '👶'}}</text>
+            <image wx:if="{{item.avatarType === 'image' || (item.avatar && item.avatar.length > 4)}}" src="{{item.avatar}}" mode="aspectFill" class="avatar-image"></image>
+            <text wx:else class="avatar-emoji-display">{{item.avatar || '👶'}}</text>
             <view class="avatar-edit">
               <text>编辑</text>
             </view>
@@ -126,14 +127,27 @@
       <text class="form-label">选择头像</text>
       <view class="avatar-list">
         <view
-          class="avatar-option {{item === childForm.avatar ? 'active' : ''}}"
+          class="avatar-option {{item.value === childForm.avatar ? 'active' : ''}}"
           wx:for="{{avatarList}}"
           wx:for-index="index"
           wx:key="index"
           bindtap="selectAvatar"
-          data-avatar="{{item}}">
-          <text class="avatar-emoji">{{item}}</text>
+          data-avatar="{{item.value}}"
+          data-type="{{item.type}}">
+          <image wx:if="{{item.type === 'image'}}" src="{{item.value}}" class="avatar-img-small"></image>
+          <text wx:else class="avatar-emoji">{{item.value}}</text>
         </view>
+        
+        <!-- 自定义上传按钮 -->
+        <view class="avatar-option upload-btn {{childForm.avatarType === 'image' && (childForm.avatar.startsWith('http') || childForm.avatar.startsWith('wxfile')) ? 'active' : ''}}" bindtap="chooseImage">
+          <text class="upload-icon">📷</text>
+        </view>
+      </view>
+      
+      <!-- 当前选中预览（如果是自定义上传的） -->
+      <view class="avatar-preview" wx:if="{{childForm.avatarType === 'image'}}">
+        <text class="preview-label">当前预览:</text>
+        <image src="{{childForm.avatar}}" mode="aspectFill" class="preview-image"></image>
       </view>
     </view>
     

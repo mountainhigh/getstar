@@ -8,6 +8,25 @@ cloud.init({
 const db = cloud.database();
 const _ = db.command;
 
+// 日志配置：生产环境设置为 false
+const DEBUG = true;
+
+/**
+ * 调试日志 - 仅开发环境输出
+ */
+function debugLog(...args) {
+  if (DEBUG) {
+    console.log('[DEBUG]', ...args);
+  }
+}
+
+/**
+ * 错误日志 - 始终输出
+ */
+function errorLog(...args) {
+  console.error('[ERROR]', ...args);
+}
+
 // 等级配置
 const LEVELS = [
   { level: 1, name: '新手宝宝', points: 0 },
@@ -75,24 +94,16 @@ exports.main = async (event, context) => {
     const beijingTime = new Date(beijingTimestamp);
     const dateStr = `${beijingTime.getFullYear()}-${String(beijingTime.getMonth() + 1).padStart(2, '0')}-${String(beijingTime.getDate()).padStart(2, '0')}`;
 
-    console.log('云函数检查今日打卡:');
-    console.log('habitId:', habitId);
-    console.log('childId:', childId);
-    console.log('UTC 时间:', today.toISOString());
-    console.log('东八区时间:', beijingTime.toISOString());
-    console.log('dateStr:', dateStr);
-    
+    debugLog('云函数检查今日打卡:', { habitId, childId, dateStr });
+    debugLog('UTC 时间:', today.toISOString());
+    debugLog('东八区时间:', beijingTime.toISOString());
+
     const checkRes = await db.collection('check_ins').where({
       habitId,
       date: dateStr
     }).get();
-    
-    console.log('云函数查询结果:', checkRes.data.length, '条');
-    console.log('云函数查询详细数据:', checkRes.data);
-    
-    // 同时查询所有 check_ins 记录
-    const allCheckIns = await db.collection('check_ins').limit(5).get();
-    console.log('云函数：数据库中所有 check_ins 记录（前5条）:', allCheckIns.data);
+
+    debugLog('查询结果:', checkRes.data.length, '条');
 
     if (checkRes.data.length > 0) {
       return {
@@ -124,15 +135,14 @@ exports.main = async (event, context) => {
     const levelName = newLevelInfo.name;
 
     // 创建打卡记录
-    console.log('准备插入打卡记录:', {
+    debugLog('准备插入打卡记录:', {
       childId,
       habitId,
       date: dateStr,
       points: points,
-      habitPoints: habitPoints || habit.points,
-      openid: wxContext.OPENID
+      habitPoints: habitPoints || habit.points
     });
-    
+
     const addRes = await db.collection('check_ins').add({
       data: {
         childId,
@@ -147,12 +157,8 @@ exports.main = async (event, context) => {
         createTime: db.serverDate()
       }
     });
-    
-    console.log('打卡记录插入成功，ID:', addRes._id);
-    
-    // 验证插入：立即查询刚插入的记录
-    const verifyRes = await db.collection('check_ins').doc(addRes._id).get();
-    console.log('验证查询结果:', verifyRes.data);
+
+    debugLog('打卡记录插入成功，ID:', addRes._id);
 
     // 更新孩子信息
     await db.collection('children').doc(childId).update({
@@ -176,7 +182,7 @@ exports.main = async (event, context) => {
       }
     };
   } catch (err) {
-    console.error('打卡失败:', err);
+    errorLog('打卡失败:', err);
     return {
       code: -1,
       message: '打卡失败'

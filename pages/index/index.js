@@ -1,5 +1,9 @@
 const { formatNumber, formatDate, showToast, showLoading, hideLoading } = require('../../utils/util');
 const { getStorage, setStorage } = require('../../utils/storage');
+const { debug, info, warn, error } = require('../../utils/logger');
+
+// 生产环境配置
+const IS_DEV = true; // 生产环境设置为 false
 
 Page({
   data: {
@@ -27,12 +31,14 @@ Page({
       avatar: '👶'
     },
     avatarList: [
-      '👶',
-      '👦',
-      '🧒',
-      '👧',
-      '🧑'
-    ]
+      { type: 'image', value: '/images/avatars/boy1.png' },
+      { type: 'image', value: '/images/avatars/boy2.png' },
+      { type: 'image', value: '/images/avatars/girl1.png' },
+      { type: 'image', value: '/images/avatars/girl2.png' }
+    ],
+    isLoading: true,
+    loadingText: '正在启动...',
+    showError: false
   },
 
   onLoad() {
@@ -57,45 +63,70 @@ Page({
    */
   async initPage() {
     try {
-      showLoading('加载中...');
+      this.setData({ 
+        isLoading: true, 
+        showError: false,
+        loadingText: '正在启动...' 
+      });
 
       // 等待 app 初始化完成
       const app = getApp();
+      
+      // 添加超时处理
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 10000)
+      );
 
-      // 如果初始化还未完成，等待一段时间
-      if (!app.globalData.isInitialized) {
-        let waitCount = 0;
-        while (!app.globalData.isInitialized && waitCount < 50) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          waitCount++;
+      const initPromise = (async () => {
+        // 如果初始化还未完成，等待一段时间
+        if (!app.globalData.isInitialized) {
+          this.setData({ loadingText: '正在连接服务器...' });
+          let waitCount = 0;
+          while (!app.globalData.isInitialized && waitCount < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            waitCount++;
+          }
         }
-      }
 
-      const userInfo = app.getUserInfo();
+        const userInfo = app.getUserInfo();
 
-      if (!userInfo.isLoggedIn) {
-        hideLoading();
-        showToast('登录失败，请重试');
-        return;
-      }
+        if (!userInfo.isLoggedIn) {
+          throw new Error('未登录');
+        }
 
-      // 加载孩子列表和习惯列表
-      await this.loadChildrenList();
+        this.setData({ loadingText: '加载数据中...' });
 
-      // 如果是新用户且有习惯模板,设置标志
-      if (app.globalData.habitTemplates && app.globalData.habitTemplates.length > 0) {
-        this.setData({
-          isNewUser: true,
-          habitTemplates: app.globalData.habitTemplates
-        });
-      }
+        // 加载孩子列表和习惯列表
+        await this.loadChildrenList();
 
-      hideLoading();
+        // 如果是新用户且有习惯模板,设置标志
+        if (app.globalData.habitTemplates && app.globalData.habitTemplates.length > 0) {
+          this.setData({
+            isNewUser: true,
+            habitTemplates: app.globalData.habitTemplates
+          });
+        }
+      })();
+
+      await Promise.race([initPromise, timeoutPromise]);
+
+      // 加载完成，延迟一点隐藏欢迎页，让用户看清
+      setTimeout(() => {
+        this.setData({ isLoading: false });
+      }, 500);
+
     } catch (err) {
-      hideLoading();
       console.error('初始化页面失败:', err);
+      this.setData({ 
+        showError: true,
+        loadingText: '加载失败'
+      });
       showToast('加载失败,请重试');
     }
+  },
+
+  retryInit() {
+    this.initPage();
   },
 
   /**
@@ -145,6 +176,8 @@ Page({
 
       // 加载当前孩子信息
       await this.loadCurrentChild();
+      // 加载习惯列表
+      await this.loadHabits();
     } catch (err) {
       console.error('加载孩子列表失败:', err);
     }
@@ -224,27 +257,16 @@ Page({
 
       const db = wx.cloud.database();
 
-      console.log('=== 检查今日打卡状态 ===');
-      console.log('当前 UTC 时间戳:', now.getTime());
-      console.log('UTC 时间:', now.toISOString());
-      console.log('东八区时间戳:', beijingTimestamp);
-      console.log('东八区时间:', beijingTime.toISOString());
-      console.log('currentChildId:', this.data.currentChildId);
-      console.log('today:', today);
-      console.log('东八区年月日:', year, month, day);
+      debug('=== 检查今日打卡状态 ===', { currentChildId: this.data.currentChildId, today });
 
       const res = await db.collection('check_ins').where({
         childId: this.data.currentChildId,
         date: today
       }).get();
 
-      console.log('check_ins 查询结果:', res.data);
-      console.log('check_ins 数量:', res.data.length);
+      debug('check_ins 查询结果:', res.data.length, '条');
 
       const checkedHabitIds = res.data.map(item => item.habitId);
-      console.log('已打卡的 habitIds:', checkedHabitIds);
-
-      console.log('原始 habits:', this.data.habits);
 
       const habits = this.data.habits.map(habit => ({
         ...habit,
@@ -427,7 +449,8 @@ Page({
       showChildModal: true,
       childForm: {
         name: '',
-        avatar: this.data.avatarList[0]
+        avatar: this.data.avatarList[0].value,
+        avatarType: this.data.avatarList[0].type
       }
     });
   },
@@ -506,9 +529,50 @@ Page({
    * 选择头像
    */
   selectAvatar(e) {
-    const avatar = e.currentTarget.dataset.avatar;
+    const { avatar, type } = e.currentTarget.dataset;
     this.setData({
-      'childForm.avatar': avatar
+      'childForm.avatar': avatar,
+      'childForm.avatarType': type
+    });
+  },
+
+  /**
+   * 上传自定义头像
+   */
+  chooseImage() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      sizeType: ['compressed'],
+      success: (res) => {
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        
+        // 调用裁剪接口
+        wx.cropImage({
+          src: tempFilePath,
+          cropScale: '1:1', // 裁剪比例 1:1
+          success: (cropRes) => {
+            this.setData({
+              'childForm.avatar': cropRes.tempFilePath,
+              'childForm.avatarType': 'image'
+            });
+          },
+          fail: (err) => {
+            console.log('用户取消裁剪或裁剪失败', err);
+            // 如果裁剪失败（非取消），使用原图
+            if (err.errMsg !== 'cropImage:fail cancel') {
+               this.setData({
+                'childForm.avatar': tempFilePath,
+                'childForm.avatarType': 'image'
+              });
+            }
+          }
+        });
+      },
+      fail: (err) => {
+        console.error('选择图片失败', err);
+      }
     });
   },
 

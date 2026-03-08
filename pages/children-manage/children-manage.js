@@ -14,11 +14,10 @@ Page({
       avatar: ''
     },
     avatarList: [
-      '👶',
-      '👦',
-      '🧒',
-      '👧',
-      '🧑'
+      { type: 'image', value: '/images/avatars/boy1.png' },
+      { type: 'image', value: '/images/avatars/boy2.png' },
+      { type: 'image', value: '/images/avatars/girl1.png' },
+      { type: 'image', value: '/images/avatars/girl2.png' }
     ]
   },
 
@@ -174,7 +173,8 @@ Page({
       editChildId: childId,
       childForm: {
         name: child.name,
-        avatar: child.avatar || this.data.avatarList[0]
+        avatar: child.avatar || this.data.avatarList[0].value,
+        avatarType: child.avatarType || (child.avatar && child.avatar.startsWith('cloud://') ? 'image' : 'emoji')
       }
     });
   },
@@ -354,9 +354,50 @@ Page({
    * 选择头像
    */
   selectAvatar(e) {
-    const avatar = e.currentTarget.dataset.avatar;
+    const { avatar, type } = e.currentTarget.dataset;
     this.setData({
-      'childForm.avatar': avatar
+      'childForm.avatar': avatar,
+      'childForm.avatarType': type
+    });
+  },
+
+  /**
+   * 上传自定义头像
+   */
+  chooseImage() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      sizeType: ['compressed'],
+      success: (res) => {
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        
+        // 调用裁剪接口
+        wx.cropImage({
+          src: tempFilePath,
+          cropScale: '1:1', // 裁剪比例 1:1
+          success: (cropRes) => {
+            this.setData({
+              'childForm.avatar': cropRes.tempFilePath,
+              'childForm.avatarType': 'image'
+            });
+          },
+          fail: (err) => {
+            console.log('用户取消裁剪或裁剪失败', err);
+            // 如果裁剪失败（非取消），使用原图
+            if (err.errMsg !== 'cropImage:fail cancel') {
+               this.setData({
+                'childForm.avatar': tempFilePath,
+                'childForm.avatarType': 'image'
+              });
+            }
+          }
+        });
+      },
+      fail: (err) => {
+        console.error('选择图片失败', err);
+      }
     });
   },
 

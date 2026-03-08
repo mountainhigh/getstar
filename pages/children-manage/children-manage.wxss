@@ -560,3 +560,45 @@
   width: 100%;
   height: 100%;
 }
+
+/* 新增样式 */
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-img-small {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+}
+
+.upload-btn {
+  background: #F0F0F0;
+  border: 2rpx dashed #CCC;
+}
+
+.upload-icon {
+  font-size: 50rpx;
+}
+
+.avatar-preview {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  justify-content: center;
+}
+
+.preview-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.preview-image {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  border: 4rpx solid #FF6B6B;
+}

@@ -35,7 +35,10 @@
 
       <!-- 头像和名字 -->
       <view class="child-info">
-        <image class="avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+        <image wx:if="{{item.avatarType === 'image' || (item.avatar && item.avatar.length > 4)}}" class="avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+        <view wx:else class="avatar-emoji-wrapper">
+          <text class="avatar-emoji">{{item.avatar || '👶'}}</text>
+        </view>
         <text class="name">{{item.childName}}</text>
       </view>
 
