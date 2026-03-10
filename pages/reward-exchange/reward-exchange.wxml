@@ -9,8 +9,8 @@
             bindtap="selectChild"
             data-index="{{index}}">
         <view class="child-avatar">
-          <text class="avatar-emoji" wx:if="{{item.avatar}}">{{item.avatar}}</text>
-          <image wx:else src="/images/default-avatar.png" mode="aspectFill"></image>
+          <image wx:if="{{item.avatarType === 'image' || (item.avatar && item.avatar.length > 4)}}" src="{{item.avatar}}" mode="aspectFill" class="avatar-image"></image>
+          <text wx:else class="avatar-emoji">{{item.avatar || '👶'}}</text>
         </view>
         <view class="child-info">
           <text class="child-name">{{item.name}}</text>

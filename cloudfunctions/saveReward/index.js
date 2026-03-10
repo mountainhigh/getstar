@@ -4,7 +4,7 @@ const db = cloud.database()
 const _ = db.command
 
 exports.main = async (event) => {
-  const { rewardId, rewardData, isEdit } = event
+  const { rewardId, rewardData, isEdit, familyId } = event
   const { OPENID } = cloud.getWXContext()
 
   try {
@@ -34,6 +34,8 @@ exports.main = async (event) => {
       const result = await db.collection('rewards').add({
         data: {
           ...rewardData,
+          _openid: OPENID,
+          familyId: familyId,
           stock: -1, // -1 表示无限库存
           enabled: true,
           createTime: db.serverDate(),

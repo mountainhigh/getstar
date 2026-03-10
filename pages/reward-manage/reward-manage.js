@@ -16,7 +16,7 @@ Page({
       description: ''
     },
     categories: ['美食', '娱乐', '活动', '学习', '玩具', '其他'],
-    icons: ['🍰', '🍦', '🧸', '🎮', '🎬', '🎡', '🌟', '🎁', '🎀', '🎈', '🎪', '🎠', '🎨', '🎭', '🎯', '🎲', '🎳', '🎵', '🎶', '🎼'],
+    icons: ['🍰', '🍦', '🧸', '🪙', '🎮', '🎬', '🎡', '🌟', '🎁', '🎀', '🎈', '🎪', '🎠', '🎨', '🎭', '🎯', '🎲', '🎳', '🎵', '🎼'],
     colors: ['#FF6B6B', '#FF8E53', '#4ECDC4', '#44A8B0', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F']
   },
 
@@ -218,6 +218,9 @@ Page({
         description: description.trim()
       }
 
+      const app = getApp(); // 获取 app 实例
+      const familyId = app.globalData.familyId; // 获取 familyId
+
       if (this.data.isEdit) {
         // 编辑礼物
         await wx.cloud.callFunction({
@@ -225,7 +228,8 @@ Page({
           data: {
             rewardId: this.data.currentRewardId,
             rewardData: rewardData,
-            isEdit: true
+            isEdit: true,
+            familyId: familyId // 传递 familyId
           }
         })
       } else {
@@ -234,7 +238,8 @@ Page({
           name: 'saveReward',
           data: {
             rewardData: rewardData,
-            isEdit: false
+            isEdit: false,
+            familyId: familyId // 传递 familyId
           }
         })
       }

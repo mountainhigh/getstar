@@ -143,7 +143,7 @@ Page({
         getApp().globalData.currentChildId = currentChildId;
       }
 
-      await this.loadCurrentChild();
+      await this.loadChildrenList();
       await this.loadHabits();
       await this.checkTodayStatus();
     } catch (err) {
