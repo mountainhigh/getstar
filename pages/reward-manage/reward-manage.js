@@ -310,5 +310,23 @@ Page({
         }
       }
     })
+  },
+
+  // 分享给好友
+  onShareAppMessage() {
+    return {
+      title: '攒星星 - 管理礼物奖励',
+      path: '/pages/reward-manage/reward-manage',
+      imageUrl: '/images/share-cover.png'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '攒星星 - 管理礼物奖励',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    }
   }
 })

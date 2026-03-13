@@ -395,11 +395,21 @@ Page({
     }, 1000)
   },
 
-  // 分享
+  // 分享给好友
   onShareAppMessage() {
     return {
-      title: 'GetStar 礼物兑换中心',
-      path: '/pages/reward-exchange/reward-exchange'
+      title: '攒星星 礼物兑换中心',
+      path: '/pages/reward-exchange/reward-exchange',
+      imageUrl: '/images/share-cover.png'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '攒星星 礼物兑换中心',
+      query: '',
+      imageUrl: '/images/share-cover.png'
     }
   }
 })

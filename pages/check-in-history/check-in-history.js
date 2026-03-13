@@ -452,5 +452,27 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    return {
+      title: '攒星星 - 查看打卡历史记录',
+      path: '/pages/check-in-history/check-in-history',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    return {
+      title: '攒星星 - 查看打卡历史记录',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
   }
 });

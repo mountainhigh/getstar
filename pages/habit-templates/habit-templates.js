@@ -265,5 +265,27 @@ Page({
       console.error('添加习惯失败:', err);
       showToast('添加失败,请重试');
     }
+  },
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    return {
+      title: '攒星星 - 丰富的习惯模板库',
+      path: '/pages/habit-templates/habit-templates',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    return {
+      title: '攒星星 - 丰富的习惯模板库',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
   }
 });

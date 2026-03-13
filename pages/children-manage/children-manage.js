@@ -438,8 +438,8 @@ Page({
    */
   showAbout() {
     wx.showModal({
-      title: '关于 GetStar',
-      content: 'GetStar - 儿童行为激励管理小程序\n帮助孩子养成好习惯',
+      title: '关于 攒星星',
+      content: '攒星星 - 儿童行为激励管理小程序\n帮助孩子养成好习惯',
       showCancel: false
     });
   },
@@ -615,5 +615,27 @@ Page({
         }
       }
     });
+  },
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    return {
+      title: '攒星星 - 管理孩子的习惯养成',
+      path: '/pages/index/index',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    return {
+      title: '攒星星 - 管理孩子的习惯养成',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
   }
 });

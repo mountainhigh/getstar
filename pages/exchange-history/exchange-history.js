@@ -281,5 +281,23 @@ Page({
     setTimeout(() => {
       wx.stopPullDownRefresh()
     }, 1000)
+  },
+
+  // 分享给好友
+  onShareAppMessage() {
+    return {
+      title: '攒星星 - 查看兑换历史',
+      path: '/pages/exchange-history/exchange-history',
+      imageUrl: '/images/share-cover.png'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '攒星星 - 查看兑换历史',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    }
   }
 })

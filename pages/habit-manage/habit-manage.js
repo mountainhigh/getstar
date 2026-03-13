@@ -252,5 +252,27 @@ Page({
   /**
    * 阻止事件冒泡
    */
-  stopPropagation() {}
+  stopPropagation() {},
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    return {
+      title: '攒星星 - 管理孩子的习惯',
+      path: '/pages/habit-manage/habit-manage',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    return {
+      title: '攒星星 - 管理孩子的习惯',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
+  }
 });

@@ -3,7 +3,7 @@
   <view class="no-family" wx:if="{{!hasFamily}}">
     <view class="welcome-card card">
       <text class="welcome-icon">👋</text>
-      <text class="welcome-title">欢迎来到 GetStar</text>
+      <text class="welcome-title">欢迎来到 攒星星</text>
       <text class="welcome-desc">创建家庭账户，开启孩子的习惯养成之旅</text>
       <button class="btn btn-primary mt-30" bindtap="createFamily">创建家庭</button>
     </view>

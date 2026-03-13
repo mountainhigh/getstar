@@ -376,5 +376,25 @@ Page({
     setTimeout(() => {
       wx.stopPullDownRefresh()
     }, 1000)
+  },
+
+  // 分享给好友
+  onShareAppMessage() {
+    const childName = this.data.children[this.data.currentChildIndex]?.name || '';
+    return {
+      title: childName ? `查看${childName}的习惯养成统计` : '攒星星 - 习惯养成统计',
+      path: '/pages/statistics/statistics',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    const childName = this.data.children[this.data.currentChildIndex]?.name || '';
+    return {
+      title: childName ? `${childName}的习惯养成统计` : '攒星星 - 习惯养成统计',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
   }
 })

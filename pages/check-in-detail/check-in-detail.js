@@ -291,5 +291,29 @@ Page({
         }
       }
     });
+  },
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    const habitName = this.data.habit?.name || '习惯打卡';
+    return {
+      title: `我在攒星星打卡：${habitName}`,
+      path: '/pages/index/index',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    const habitName = this.data.habit?.name || '习惯打卡';
+    return {
+      title: `我在攒星星打卡：${habitName}`,
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
   }
 });

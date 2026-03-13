@@ -295,5 +295,29 @@ Page({
       showUnlock: false, 
       newUnlockedBadge: null 
     });
+  },
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    const collectedCount = this.data.collectedCount || 0;
+    return {
+      title: collectedCount > 0 ? `我在攒星星已收集${collectedCount}个称号！` : '攒星星 - 称号收藏',
+      path: '/pages/badge-collection/badge-collection',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    const collectedCount = this.data.collectedCount || 0;
+    return {
+      title: collectedCount > 0 ? `我在攒星星已收集${collectedCount}个称号！` : '攒星星 - 称号收藏',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
   }
 });

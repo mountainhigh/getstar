@@ -137,7 +137,7 @@ Page({
       // 从 storage 中读取最新的 currentChildId
       const currentChildId = getStorage('currentChildId');
       if (currentChildId && currentChildId !== this.data.currentChildId) {
-        console.log('检测到孩子切换，更新 currentChildId:', currentChildId);
+        debug('检测到孩子切换，更新 currentChildId:', currentChildId);
         this.setData({ currentChildId });
         // 同步更新 app.globalData
         getApp().globalData.currentChildId = currentChildId;
@@ -273,22 +273,22 @@ Page({
         todayChecked: checkedHabitIds.includes(habit._id)
       }));
 
-      console.log('处理后的 habits:', habits);
+      debug('处理后的 habits:', habits);
 
       const completedCount = habits.filter(h => h.todayChecked).length;
-      console.log('已完成数量:', completedCount);
+      debug('已完成数量:', completedCount);
 
       this.setData({
         habits,
         completedCount
       });
 
-      console.log('=== 检查今日打卡状态结束 ===');
+      debug('=== 检查今日打卡状态结束 ===');
     } catch (err) {
       console.error('检查打卡状态失败:', err);
       // 如果集合不存在,静默处理
       if (err.errCode && err.errCode === -502005) {
-        console.log('check_ins 集合不存在,将自动创建');
+        debug('check_ins 集合不存在,将自动创建');
       }
     }
   },
@@ -488,7 +488,7 @@ Page({
       });
 
       const childId = childResult._id || childResult.id || childResult.data?._id;
-      console.log('孩子添加成功,childId:', childId);
+      debug('孩子添加成功,childId:', childId);
 
       // 从模板批量添加习惯(按order排序,前10个)
       showLoading('正在添加习惯模板...');
@@ -499,8 +499,8 @@ Page({
           limit: 10
         }
       });
-      console.log('习惯模板添加结果:', addResult);
-      console.log('习惯模板添加完成');
+      debug('习惯模板添加结果:', addResult);
+      debug('习惯模板添加完成');
 
       // 设置为当前孩子
       setStorage('currentChildId', childId);
@@ -559,7 +559,7 @@ Page({
             });
           },
           fail: (err) => {
-            console.log('用户取消裁剪或裁剪失败', err);
+            debug('用户取消裁剪或裁剪失败', err);
             // 如果裁剪失败（非取消），使用原图
             if (err.errMsg !== 'cropImage:fail cancel') {
                this.setData({
@@ -595,5 +595,29 @@ Page({
   /**
    * 阻止事件冒泡
    */
-  stopPropagation() {}
+  stopPropagation() {},
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    const childName = this.data.currentChild?.name || '';
+    return {
+      title: childName ? `${childName}正在使用攒星星养成好习惯，快来一起加入吧！` : '攒星星 - 帮助孩子养成好习惯',
+      path: '/pages/index/index',
+      imageUrl: '/images/share-cover.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    const childName = this.data.currentChild?.name || '';
+    return {
+      title: childName ? `${childName}正在使用攒星星养成好习惯` : '攒星星 - 帮助孩子养成好习惯',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
+  }
 });

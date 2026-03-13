@@ -101,7 +101,17 @@ Page({
   onShareAppMessage() {
     return {
       title: '查看我们的星星排行榜',
-      path: '/pages/leaderboard/leaderboard'
+      path: '/pages/leaderboard/leaderboard',
+      imageUrl: '/images/share-cover.png'
     }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '攒星星 星星排行榜',
+      query: '',
+      imageUrl: '/images/share-cover.png'
+    };
   }
 })
