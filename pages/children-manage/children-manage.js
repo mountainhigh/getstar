@@ -126,7 +126,7 @@ Page({
    * 显示添加孩子弹窗
    */
   showAddChildModal() {
-    console.log('showAddChildModal 被调用', {
+    debug('showAddChildModal 被调用', {
       avatarList: this.data.avatarList
     });
 
@@ -145,7 +145,7 @@ Page({
    * 添加孩子
    */
   addChild() {
-    console.log('addChild 被调用', {
+    debug('addChild 被调用', {
       childrenListLength: this.data.childrenList.length,
       hasFamily: this.data.hasFamily
     });
@@ -275,11 +275,11 @@ Page({
       const app = getApp();
 
       // 调试日志
-      console.log('=== saveChild 调试信息 ===');
-      console.log('familyId:', app.globalData.familyId);
-      console.log('openid:', app.globalData.openid);
-      console.log('name:', name);
-      console.log('avatar:', avatar);
+      debug('=== saveChild 调试信息 ===');
+      debug('familyId:', app.globalData.familyId);
+      debug('openid:', app.globalData.openid);
+      debug('name:', name);
+      debug('avatar:', avatar);
 
       if (this.data.isEdit) {
         // 编辑
@@ -307,7 +307,7 @@ Page({
         });
 
         const childId = res._id || res.id || res.data?._id;
-        console.log('孩子添加成功,childId:', childId);
+        debug('孩子添加成功,childId:', childId);
 
         // 从模板批量添加习惯(按order排序,前10个)
         showLoading('正在添加习惯模板...');
@@ -318,8 +318,8 @@ Page({
             limit: 10
           }
         });
-        console.log('习惯模板添加结果:', addResult);
-        console.log('习惯模板添加完成');
+        debug('习惯模板添加结果:', addResult);
+        debug('习惯模板添加完成');
 
         // 如果是第一个孩子,设为当前选中
         if (this.data.childrenList.length === 0) {
@@ -384,7 +384,7 @@ Page({
             });
           },
           fail: (err) => {
-            console.log('用户取消裁剪或裁剪失败', err);
+            debug('用户取消裁剪或裁剪失败', err);
             // 如果裁剪失败（非取消），使用原图
             if (err.errMsg !== 'cropImage:fail cancel') {
                this.setData({
@@ -464,13 +464,13 @@ Page({
             mask: true
           });
 
-          console.log('调用 fixChildrenIsDeleted 云函数');
+          debug('调用 fixChildrenIsDeleted 云函数');
           
           const cloudRes = await wx.cloud.callFunction({
             name: 'fixChildrenIsDeleted'
           });
 
-          console.log('云函数返回结果:', cloudRes);
+          debug('云函数返回结果:', cloudRes);
 
           wx.hideLoading();
 
@@ -517,7 +517,7 @@ Page({
    * 初始化数据库
    */
   async initDatabase() {
-    console.log('========== 开始初始化数据库 ==========');
+    debug('========== 开始初始化数据库 ==========');
     
     wx.showModal({
       title: '确认初始化',
@@ -526,11 +526,11 @@ Page({
       confirmColor: '#FF6B6B',
       success: async (res) => {
         if (!res.confirm) {
-          console.log('用户取消初始化');
+          debug('用户取消初始化');
           return;
         }
 
-        console.log('用户确认初始化，开始调用云函数...');
+        debug('用户确认初始化，开始调用云函数...');
         
         try {
           wx.showLoading({
@@ -538,7 +538,7 @@ Page({
             mask: true
           });
 
-          console.log('调用 initDatabase 云函数，参数: { drop: true }');
+          debug('调用 initDatabase 云函数，参数: { drop: true }');
           
           const cloudRes = await wx.cloud.callFunction({
             name: 'initDatabase',
@@ -547,12 +547,12 @@ Page({
             }
           });
 
-          console.log('云函数返回结果:', cloudRes);
-          console.log('cloudRes.result:', cloudRes.result);
-          console.log('cloudRes.result.success:', cloudRes.result?.success);
-          console.log('cloudRes.result.message:', cloudRes.result?.message);
-          console.log('cloudRes.result.data:', cloudRes.result?.data);
-          console.log('cloudRes.result.results:', cloudRes.result?.results);
+          debug('云函数返回结果:', cloudRes);
+          debug('cloudRes.result:', cloudRes.result);
+          debug('cloudRes.result.success:', cloudRes.result?.success);
+          debug('cloudRes.result.message:', cloudRes.result?.message);
+          debug('cloudRes.result.data:', cloudRes.result?.data);
+          debug('cloudRes.result.results:', cloudRes.result?.results);
 
           wx.hideLoading();
 
@@ -566,14 +566,14 @@ Page({
             results = cloudRes.result.data;
           }
 
-          console.log('最终使用的 results:', results);
+          debug('最终使用的 results:', results);
 
           if (results && Object.keys(results).length > 0) {
             let resultText = '数据库初始化完成:\n\n';
 
             for (const tableName in results) {
               const result = results[tableName];
-              console.log(`表 ${tableName} 的结果:`, result);
+              debug(`表 ${tableName} 的结果:`, result);
               if (result.success) {
                 if (result.skipped) {
                   resultText += `${tableName}: 已有数据，跳过\n`;
@@ -585,7 +585,7 @@ Page({
               }
             }
 
-            console.log('最终显示内容:', resultText);
+            debug('最终显示内容:', resultText);
 
             wx.showModal({
               title: '初始化完成',

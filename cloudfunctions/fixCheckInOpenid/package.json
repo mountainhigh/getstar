@@ -1,9 +1,0 @@
-{
-  "name": "fixCheckInOpenid",
-  "version": "1.0.0",
-  "description": "修复 check_ins 表的 _openid 字段",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}

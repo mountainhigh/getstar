@@ -1,9 +1,0 @@
-{
-  "name": "fixMissingOpenid",
-  "version": "1.0.0",
-  "description": "修复所有缺少 _openid 字段的记录",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}

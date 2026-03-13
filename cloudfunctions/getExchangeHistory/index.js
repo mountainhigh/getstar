@@ -7,18 +7,18 @@ exports.main = async (event) => {
   const { childId, timePeriod } = event
   const { OPENID } = cloud.getWXContext()
 
-  console.log('=== getExchangeHistory 云函数开始 ===')
-  console.log('childId:', childId)
-  console.log('timePeriod:', timePeriod)
-  console.log('OPENID:', OPENID)
+  debug('=== getExchangeHistory 云函数开始 ===')
+  debug('childId:', childId)
+  debug('timePeriod:', timePeriod)
+  debug('OPENID:', OPENID)
 
   try {
     // 验证孩子是否属于当前用户
     const child = await db.collection('children').doc(childId).get()
-    console.log('孩子数据:', child.data)
+    debug('孩子数据:', child.data)
     
     if (!child.data || child.data._openid !== OPENID) {
-      console.log('无权查看此孩子的兑换记录')
+      debug('无权查看此孩子的兑换记录')
       return { success: false, error: '无权查看此孩子的兑换记录' }
     }
 
@@ -26,23 +26,23 @@ exports.main = async (event) => {
     const now = new Date()
     let startDate = new Date(0)
     
-    console.log('当前时间:', now)
+    debug('当前时间:', now)
 
     switch (timePeriod) {
       case 'week':
         startDate = new Date(now)
         startDate.setDate(now.getDate() - 7)
-        console.log('查询最近7天， startDate:', startDate)
+        debug('查询最近7天， startDate:', startDate)
         break
       case 'month':
         startDate = new Date(now)
         startDate.setDate(now.getDate() - 30)
-        console.log('查询最近30天， startDate:', startDate)
+        debug('查询最近30天， startDate:', startDate)
         break
       case 'all':
       default:
         startDate = new Date(0)
-        console.log('查询全部记录')
+        debug('查询全部记录')
         break
     }
 
@@ -55,12 +55,12 @@ exports.main = async (event) => {
       .orderBy('createdAt', 'desc')
       .get()
 
-    console.log('兑换记录查询成功:', exchanges.data.length, '条记录')
-    console.log('原始数据:', JSON.stringify(exchanges.data, null, 2))
+    debug('兑换记录查询成功:', exchanges.data.length, '条记录')
+    debug('原始数据:', JSON.stringify(exchanges.data, null, 2))
 
     // 获取关联的礼物信息
     const rewardIds = [...new Set(exchanges.data.map(item => item.rewardId))]
-    console.log('关联的 rewardIds:', rewardIds)
+    debug('关联的 rewardIds:', rewardIds)
     let rewardMap = {}
 
     if (rewardIds.length > 0) {
@@ -70,7 +70,7 @@ exports.main = async (event) => {
         })
         .get()
 
-      console.log('礼物查询成功:', rewards.data.length, '条记录')
+      debug('礼物查询成功:', rewards.data.length, '条记录')
 
       rewardMap = rewards.data.reduce((map, reward) => {
         map[reward._id] = reward
@@ -137,8 +137,8 @@ exports.main = async (event) => {
       }
     })
 
-    console.log('最终 exchangeList:', exchangeList.length, '条')
-    console.log('=== getExchangeHistory 云函数结束 ===')
+    debug('最终 exchangeList:', exchangeList.length, '条')
+    debug('=== getExchangeHistory 云函数结束 ===')
 
     return { success: true, data: exchangeList }
   } catch (error) {

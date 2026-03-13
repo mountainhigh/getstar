@@ -21,19 +21,19 @@ Page({
   },
 
   onLoad() {
-    console.log('=== 礼物管理页面 onLoad ===')
-    console.log('familyId:', app.globalData.familyId)
+    debug('=== 礼物管理页面 onLoad ===')
+    debug('familyId:', app.globalData.familyId)
     this.loadRewards()
   },
 
   onShow() {
-    console.log('=== 礼物管理页面 onShow ===')
+    debug('=== 礼物管理页面 onShow ===')
     this.loadRewards()
   },
 
   // 加载礼物列表
   async loadRewards() {
-    console.log('=== loadRewards 开始 ===')
+    debug('=== loadRewards 开始 ===')
     this.setData({ loading: true })
 
     try {
@@ -44,8 +44,8 @@ Page({
         name: 'getRewardList',
         success: res => {
           if (res.result && res.result.success) {
-            console.log('礼物列表查询成功:', res.result.data.length, '条记录')
-            console.log('礼物数据:', res.result.data)
+            debug('礼物列表查询成功:', res.result.data.length, '条记录')
+            debug('礼物数据:', res.result.data)
 
             this.setData({
               rewards: res.result.data,

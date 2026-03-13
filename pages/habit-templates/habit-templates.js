@@ -54,7 +54,7 @@ Page({
 
       // 获取已使用的模板ID列表
       const existingTemplateIds = res.data.map(h => h.templateId).filter(id => id);
-      console.log('孩子已有的习惯模板ID:', existingTemplateIds);
+      debug('孩子已有的习惯模板ID:', existingTemplateIds);
 
       // 更新模板列表，标记已存在的
       const templates = this.data.templates.map(t => ({
@@ -78,14 +78,14 @@ Page({
     try {
       showLoading('加载中...');
 
-      console.log('开始加载习惯模板...');
+      debug('开始加载习惯模板...');
 
       // 通过云函数读取习惯模板（云函数有管理员权限，不受前端安全规则限制）
       const res = await wx.cloud.callFunction({
         name: 'getHabitTemplates'
       });
 
-      console.log('云函数返回结果:', res);
+      debug('云函数返回结果:', res);
 
       if (!res.result || !res.result.success) {
         hideLoading();
@@ -99,15 +99,15 @@ Page({
         selected: false
       }));
 
-      console.log('处理后的模板数量:', templates.length);
-      console.log('第一个模板:', templates[0]);
+      debug('处理后的模板数量:', templates.length);
+      debug('第一个模板:', templates[0]);
 
       this.setData({
         templates,
         filteredTemplates: templates
       });
 
-      console.log('setData完成, 当前filteredTemplates长度:', this.data.filteredTemplates.length);
+      debug('setData完成, 当前filteredTemplates长度:', this.data.filteredTemplates.length);
 
       hideLoading();
     } catch (err) {
@@ -134,29 +134,29 @@ Page({
   filterTemplates() {
     const { templates, currentCategory } = this.data;
     
-    console.log('=== 过滤模板调试 ===');
-    console.log('当前选中分类:', currentCategory);
-    console.log('所有模板数量:', templates.length);
+    debug('=== 过滤模板调试 ===');
+    debug('当前选中分类:', currentCategory);
+    debug('所有模板数量:', templates.length);
     
     // 显示所有模板的分类值
     const allCategories = templates.map(t => ({ name: t.name, category: t.category }));
-    console.log('所有模板详情:', JSON.stringify(allCategories, null, 2));
+    debug('所有模板详情:', JSON.stringify(allCategories, null, 2));
     
     // 统计各分类数量
     const categoryCount = {};
     templates.forEach(t => {
       categoryCount[t.category] = (categoryCount[t.category] || 0) + 1;
     });
-    console.log('各分类数量:', categoryCount);
+    debug('各分类数量:', categoryCount);
     
     let filtered = templates;
     if (currentCategory !== 'all') {
       filtered = templates.filter(t => {
         const match = t.category === currentCategory;
-        console.log(`比较: 模板"${t.name}"的分类"${t.category}" === 当前"${currentCategory}" ? ${match}`);
+        debug(`比较: 模板"${t.name}"的分类"${t.category}" === 当前"${currentCategory}" ? ${match}`);
         return match;
       });
-      console.log('过滤后数量:', filtered.length);
+      debug('过滤后数量:', filtered.length);
     }
     
     this.setData({ filteredTemplates: filtered });
@@ -220,7 +220,7 @@ Page({
         try {
           const template = templates.find(t => t.id === templateId || t._id === templateId);
           if (!template) {
-            console.log('未找到模板:', templateId);
+            debug('未找到模板:', templateId);
             continue;
           }
 
@@ -240,7 +240,7 @@ Page({
               updateTime: db.serverDate()
             }
           });
-          console.log('✓ 已添加习惯:', template.name, 'ID:', result._id);
+          debug('✓ 已添加习惯:', template.name, 'ID:', result._id);
           successCount++;
         } catch (err) {
           console.error('✗ 添加习惯失败:', err);
@@ -248,7 +248,7 @@ Page({
         }
       }
 
-      console.log(`习惯添加完成: 成功 ${successCount} 个, 失败 ${failCount} 个`);
+      debug(`习惯添加完成: 成功 ${successCount} 个, 失败 ${failCount} 个`);
 
       hideLoading();
 

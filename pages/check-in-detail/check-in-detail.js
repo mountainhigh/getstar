@@ -168,24 +168,24 @@ Page({
 
       const db = wx.cloud.database();
 
-      console.log('=== 打卡详情页检查今日是否已打卡 ===');
-      console.log('habitId:', habit._id);
-      console.log('UTC 时间:', now.toISOString());
-      console.log('东八区时间:', beijingTime.toISOString());
-      console.log('date:', today);
-      console.log('查询条件:', { habitId: habit._id, date: today });
-      console.log('查询条件类型:', { habitIdType: typeof habit._id, dateType: typeof today });
+      debug('=== 打卡详情页检查今日是否已打卡 ===');
+      debug('habitId:', habit._id);
+      debug('UTC 时间:', now.toISOString());
+      debug('东八区时间:', beijingTime.toISOString());
+      debug('date:', today);
+      debug('查询条件:', { habitId: habit._id, date: today });
+      debug('查询条件类型:', { habitIdType: typeof habit._id, dateType: typeof today });
 
       const checkRes = await db.collection('check_ins').where({
         habitId: habit._id,
         date: today
       }).get();
 
-      console.log('打卡详情页查询结果:', checkRes.data.length, '条');
-      console.log('打卡详情页详细数据:', checkRes.data);
+      debug('打卡详情页查询结果:', checkRes.data.length, '条');
+      debug('打卡详情页详细数据:', checkRes.data);
 
       if (checkRes.data.length > 0) {
-        console.log('今日已打卡，返回');
+        debug('今日已打卡，返回');
         showToast('今日已打卡');
         return;
       }

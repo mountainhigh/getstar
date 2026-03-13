@@ -235,17 +235,17 @@ Page({
   switchCategory(e) {
     const categoryId = e.currentTarget.dataset.id
 
-    console.log('=== 切换分类 ===')
-    console.log('选择的分类ID:', categoryId)
-    console.log('当前所有rewards:', this.data.rewards)
+    debug('=== 切换分类 ===')
+    debug('选择的分类ID:', categoryId)
+    debug('当前所有rewards:', this.data.rewards)
 
     if (!categoryId) {
       return
     }
 
     const filtered = this.filterRewards(this.data.rewards, categoryId)
-    console.log('筛选后的rewards:', filtered)
-    console.log('筛选后的数量:', filtered.length)
+    debug('筛选后的rewards:', filtered)
+    debug('筛选后的数量:', filtered.length)
 
     this.setData({
       currentCategory: categoryId,

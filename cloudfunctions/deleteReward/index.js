@@ -9,8 +9,8 @@ const _ = db.command
 exports.main = async (event, context) => {
   const { rewardId } = event
 
-  console.log('=== 删除礼物云函数开始 ===')
-  console.log('rewardId:', rewardId)
+  debug('=== 删除礼物云函数开始 ===')
+  debug('rewardId:', rewardId)
 
   try {
     if (!rewardId) {
@@ -24,7 +24,7 @@ exports.main = async (event, context) => {
     const wxContext = cloud.getWXContext()
     const openid = wxContext.OPENID
 
-    console.log('用户 openid:', openid)
+    debug('用户 openid:', openid)
 
     // 先查询该礼物是否属于当前用户
     const rewardRes = await db.collection('rewards')
@@ -34,7 +34,7 @@ exports.main = async (event, context) => {
       })
       .get()
 
-    console.log('查询结果:', rewardRes)
+    debug('查询结果:', rewardRes)
 
     if (!rewardRes.data || rewardRes.data.length === 0) {
       return {
@@ -48,7 +48,7 @@ exports.main = async (event, context) => {
       .doc(rewardId)
       .remove()
 
-    console.log('删除成功')
+    debug('删除成功')
 
     return {
       success: true,

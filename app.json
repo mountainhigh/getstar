@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/auth/auth",
     "pages/check-in-detail/check-in-detail",
     "pages/habit-templates/habit-templates",
     "pages/children-manage/children-manage",

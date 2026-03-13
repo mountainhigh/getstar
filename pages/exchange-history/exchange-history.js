@@ -13,28 +13,28 @@ Page({
   },
 
   async onLoad(options) {
-    console.log('=== 兑换历史页面 onLoad 开始 ===')
-    console.log('options:', options)
-    console.log('storage 中的 currentChildId:', getStorage('currentChildId'))
+    debug('=== 兑换历史页面 onLoad 开始 ===')
+    debug('options:', options)
+    debug('storage 中的 currentChildId:', getStorage('currentChildId'))
     
     if (options.childId) {
-      console.log('从 options 获取 childId:', options.childId)
+      debug('从 options 获取 childId:', options.childId)
       this.setData({ currentChildId: options.childId })
     }
     this.loadChildren()
-    console.log('=== 兑换历史页面 onLoad 结束 ===')
+    debug('=== 兑换历史页面 onLoad 结束 ===')
   },
 
   onShow() {
-    console.log('=== 兑换历史页面 onShow ===')
-    console.log('当前 currentChildId:', this.data.currentChildId)
+    debug('=== 兑换历史页面 onShow ===')
+    debug('当前 currentChildId:', this.data.currentChildId)
     
     // 从 storage 读取最新的 currentChildId
     const storageChildId = getStorage('currentChildId')
-    console.log('storage 中的 currentChildId:', storageChildId)
+    debug('storage 中的 currentChildId:', storageChildId)
     
     if (storageChildId && storageChildId !== this.data.currentChildId) {
-      console.log('兑换历史页面检测到孩子切换:', storageChildId)
+      debug('兑换历史页面检测到孩子切换:', storageChildId)
       this.setData({ currentChildId: storageChildId })
       // 同步到 app.globalData
       app.globalData.currentChildId = storageChildId
@@ -44,9 +44,9 @@ Page({
 
   // 加载孩子列表
   loadChildren() {
-    console.log('=== loadChildren 开始 ===')
+    debug('=== loadChildren 开始 ===')
     const db = wx.cloud.database()
-    console.log('familyId:', app.globalData.familyId)
+    debug('familyId:', app.globalData.familyId)
 
     db.collection('children')
       .where({
@@ -56,12 +56,12 @@ Page({
       .orderBy('createTime', 'asc')
       .get({
         success: res => {
-          console.log('孩子列表查询成功:', res.data.length, '条记录')
-          console.log('孩子数据:', res.data)
+          debug('孩子列表查询成功:', res.data.length, '条记录')
+          debug('孩子数据:', res.data)
           
           if (res.data.length > 0) {
             if (!this.data.currentChildId) {
-              console.log('当前没有 childId，使用第一个孩子')
+              debug('当前没有 childId，使用第一个孩子')
               this.setData({
                 children: res.data,
                 currentChildIndex: 0,
@@ -70,7 +70,7 @@ Page({
               setStorage('currentChildId', res.data[0]._id)
               app.globalData.currentChildId = res.data[0]._id
             } else {
-              console.log('当前已有 childId:', this.data.currentChildId)
+              debug('当前已有 childId:', this.data.currentChildId)
               const index = res.data.findIndex(c => c._id === this.data.currentChildId)
               this.setData({
                 children: res.data,
@@ -79,14 +79,14 @@ Page({
             }
             this.loadExchangeHistory()
           } else {
-            console.log('没有找到孩子数据')
+            debug('没有找到孩子数据')
           }
         },
         fail: err => {
           console.error('加载孩子列表失败:', err)
         }
       })
-    console.log('=== loadChildren 结束 ===')
+    debug('=== loadChildren 结束 ===')
   },
 
   // 切换时间周期
@@ -98,9 +98,9 @@ Page({
 
   // 加载兑换记录
   async loadExchangeHistory() {
-    console.log('=== loadExchangeHistory 开始 ===')
-    console.log('currentChildId:', this.data.currentChildId)
-    console.log('currentTimePeriod:', this.data.currentTimePeriod)
+    debug('=== loadExchangeHistory 开始 ===')
+    debug('currentChildId:', this.data.currentChildId)
+    debug('currentTimePeriod:', this.data.currentTimePeriod)
     
     if (!this.data.currentChildId) {
       console.warn('currentChildId 为空，无法加载兑换记录')
@@ -111,7 +111,7 @@ Page({
     this.setData({ loading: true })
 
     try {
-      console.log('调用云函数 getExchangeHistory')
+      debug('调用云函数 getExchangeHistory')
       const res = await wx.cloud.callFunction({
         name: 'getExchangeHistory',
         data: {
@@ -120,7 +120,7 @@ Page({
         }
       })
       
-      console.log('云函数返回结果:', res)
+      debug('云函数返回结果:', res)
 
       if (!res.result.success) {
         console.error('查询失败:', res.result.error)
@@ -133,18 +133,18 @@ Page({
       }
 
       const exchangeList = res.result.data || []
-      console.log('兑换记录:', exchangeList)
+      debug('兑换记录:', exchangeList)
 
       // 按日期分组
       const groupedHistory = this.groupByDate(exchangeList)
-      console.log('分组后的 groupedHistory:', groupedHistory)
+      debug('分组后的 groupedHistory:', groupedHistory)
 
       this.setData({
         exchangeList,
         groupedHistory,
         loading: false
       })
-      console.log('=== loadExchangeHistory 结束 ===')
+      debug('=== loadExchangeHistory 结束 ===')
     } catch (err) {
       console.error('加载兑换记录失败:', err)
       this.setData({ loading: false })

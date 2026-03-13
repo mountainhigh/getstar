@@ -12,7 +12,7 @@ exports.main = async (event, context) => {
 
   try {
     const { category } = event;
-    console.log('获取礼物列表, category:', category, 'OPENID:', OPENID);
+    debug('获取礼物列表, category:', category, 'OPENID:', OPENID);
 
     // 先检查用户是否有礼物，如果没有则自动初始化
     const countRes = await db.collection('rewards')
@@ -21,15 +21,15 @@ exports.main = async (event, context) => {
       })
       .count();
 
-    console.log('用户礼物数量:', countRes.total);
+    debug('用户礼物数量:', countRes.total);
 
     if (countRes.total === 0) {
-      console.log('用户没有礼物，开始初始化默认礼物');
+      debug('用户没有礼物，开始初始化默认礼物');
       try {
         await cloud.callFunction({
           name: 'initUserRewards'
         });
-        console.log('默认礼物初始化成功');
+        debug('默认礼物初始化成功');
       } catch (initError) {
         console.error('初始化默认礼物失败:', initError);
         // 即使初始化失败也继续，返回空列表
@@ -48,7 +48,7 @@ exports.main = async (event, context) => {
     }
 
     const res = await query.get();
-    console.log('查询结果:', res.data.length, '条记录');
+    debug('查询结果:', res.data.length, '条记录');
 
     return {
       success: true,

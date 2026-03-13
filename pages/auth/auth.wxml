@@ -1,0 +1,15 @@
+<view class="container">
+  <image class="logo" src="/images/tabbar/home-active.png"></image>
+  <text class="title">欢迎使用GetStar</text>
+  <text class="description">为了提供更好的服务，我们需要获取您的微信公开信息</text>
+
+  <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile" class="auth-button">
+    授权登录
+  </button>
+  <button wx:if="{{canIUseGetUserProfile}}" bindtap="navigateBack" class="cancel-button">
+    暂不授权
+  </button>
+  <view wx:else class="tip">
+    请升级微信版本以获取更好的体验
+  </view>
+</view>

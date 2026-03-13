@@ -28,7 +28,7 @@ Page({
     // 从 storage 读取最新的 currentChildId
     const storageChildId = getStorage('currentChildId');
     if (storageChildId && storageChildId !== this.data.childId) {
-      console.log('打卡历史页面检测到孩子切换:', storageChildId);
+      debug('打卡历史页面检测到孩子切换:', storageChildId);
       this.setData({ childId: storageChildId });
       // 重新初始化页面
       this.initPage();
@@ -42,13 +42,13 @@ Page({
    * 初始化页面
    */
   initPage() {
-    console.log('=== initPage 开始 ===');
+    debug('=== initPage 开始 ===');
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
     const date = formatDate(now, 'YYYY-MM-DD');
 
-    console.log('当前日期:', { year, month, date });
+    debug('当前日期:', { year, month, date });
 
     this.setData({
       currentYear: year,
@@ -57,15 +57,15 @@ Page({
       selectedDateStr: `${month}月${now.getDate()}日`
     });
 
-    console.log('setData 完成，selectedDate:', this.data.selectedDate);
+    debug('setData 完成，selectedDate:', this.data.selectedDate);
 
     // 先加载打卡日期，再生成日历，确保日历能正确标记打卡状态
     this.loadCheckInDates().then(() => {
-      console.log('loadCheckInDates 完成，开始生成日历');
+      debug('loadCheckInDates 完成，开始生成日历');
       this.generateCalendar();
-      console.log('generateCalendar 完成，开始加载打卡历史');
+      debug('generateCalendar 完成，开始加载打卡历史');
       this.loadCheckInHistory();
-      console.log('loadCheckInHistory 完成');
+      debug('loadCheckInHistory 完成');
     }).catch(err => {
       console.error('initPage 出错:', err);
     });
@@ -75,13 +75,13 @@ Page({
    * 生成日历
    */
   generateCalendar() {
-    console.log('=== generateCalendar 开始 ===');
+    debug('=== generateCalendar 开始 ===');
     const { currentYear, currentMonth, selectedDate, checkInDates } = this.data;
-    console.log('当前数据:', { currentYear, currentMonth, selectedDate, checkInDates });
+    debug('当前数据:', { currentYear, currentMonth, selectedDate, checkInDates });
 
     const now = new Date();
     const todayStr = formatDate(now, 'YYYY-MM-DD');
-    console.log('今天日期:', todayStr);
+    debug('今天日期:', todayStr);
 
     // 获取当月第一天
     const firstDay = new Date(currentYear, currentMonth - 1, 1);
@@ -92,7 +92,7 @@ Page({
     const firstWeekday = firstDay.getDay();
     // 获取当月总天数
     const totalDays = lastDay.getDate();
-    console.log('日历信息:', { firstWeekday, totalDays });
+    debug('日历信息:', { firstWeekday, totalDays });
 
     // 生成日历数组
     const days = [];
@@ -119,10 +119,10 @@ Page({
       const hasCheckIn = checkInDates.includes(dateStr);
 
       if (isToday) {
-        console.log('今天:', dateStr, '是否选中:', isSelected);
+        debug('今天:', dateStr, '是否选中:', isSelected);
       }
       if (isSelected) {
-        console.log('选中日期:', dateStr);
+        debug('选中日期:', dateStr);
       }
 
       days.push({
@@ -148,11 +148,11 @@ Page({
       });
     }
 
-    console.log('日历生成完成，共', days.length, '天');
-    console.log('选中的日期数量:', days.filter(d => d.isSelected).length);
+    debug('日历生成完成，共', days.length, '天');
+    debug('选中的日期数量:', days.filter(d => d.isSelected).length);
 
     this.setData({ calendarDays: days }, () => {
-      console.log('日历数据已更新到视图');
+      debug('日历数据已更新到视图');
     });
   },
 
@@ -196,12 +196,12 @@ Page({
    * 选择日期
    */
   selectDate(e) {
-    console.log('=== selectDate 开始 ===');
+    debug('=== selectDate 开始 ===');
     const date = e.currentTarget.dataset.date;
-    console.log('点击的日期:', date);
+    debug('点击的日期:', date);
 
     if (!date) {
-      console.log('日期为空，返回');
+      debug('日期为空，返回');
       return;
     }
 
@@ -209,23 +209,23 @@ Page({
     const month = dateObj.getMonth() + 1;
     const day = dateObj.getDate();
 
-    console.log('即将设置:', { selectedDate: date, selectedDateStr: `${month}月${day}日` });
+    debug('即将设置:', { selectedDate: date, selectedDateStr: `${month}月${day}日` });
 
     this.setData({
       selectedDate: date,
       selectedDateStr: `${month}月${day}日`
     }, () => {
-      console.log('setData 完成，selectedDate:', this.data.selectedDate);
+      debug('setData 完成，selectedDate:', this.data.selectedDate);
       // 在 setData 回调中更新日历选中状态和加载记录
       const calendarDays = this.data.calendarDays.map(item => ({
         ...item,
         isSelected: item.date === date
       }));
 
-      console.log('更新日历选中状态，选中的日期数:', calendarDays.filter(d => d.isSelected).length);
+      debug('更新日历选中状态，选中的日期数:', calendarDays.filter(d => d.isSelected).length);
 
       this.setData({ calendarDays }, () => {
-        console.log('日历已更新，开始加载打卡历史');
+        debug('日历已更新，开始加载打卡历史');
         this.loadCheckInHistory();
       });
     });
@@ -235,23 +235,23 @@ Page({
    * 加载打卡日期
    */
   async loadCheckInDates() {
-    console.log('=== loadCheckInDates 开始 ===');
+    debug('=== loadCheckInDates 开始 ===');
     try {
       let { childId, currentYear, currentMonth } = this.data;
-      console.log('当前数据:', { childId, currentYear, currentMonth });
+      debug('当前数据:', { childId, currentYear, currentMonth });
 
       if (!childId) {
         // 优先从 storage 读取
         const app = getApp();
         childId = getStorage('currentChildId') || app.globalData.currentChildId;
-        console.log('从 storage/globalData 获取 childId:', childId);
+        debug('从 storage/globalData 获取 childId:', childId);
         if (childId) {
           this.setData({ childId });
         }
       }
 
       if (!childId) {
-        console.log('childId 为空，返回');
+        debug('childId 为空，返回');
         return;
       }
 
@@ -259,18 +259,18 @@ Page({
       const monthStart = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
       const monthEnd = `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`;
 
-      console.log('查询日期范围:', { monthStart, monthEnd });
+      debug('查询日期范围:', { monthStart, monthEnd });
 
       const res = await db.collection('check_ins').where({
         childId,
         date: db.command.gte(monthStart).and(db.command.lte(monthEnd))
       }).get();
 
-      console.log('查询结果:', res.data.length, '条记录');
+      debug('查询结果:', res.data.length, '条记录');
 
       // 获取所有打卡日期
       const checkInDates = res.data.map(item => item.date);
-      console.log('打卡日期列表:', checkInDates);
+      debug('打卡日期列表:', checkInDates);
 
       // 计算月度统计
       const totalPoints = res.data.reduce((sum, item) => sum + (item.points || 0), 0);
@@ -284,7 +284,7 @@ Page({
           totalCoins
         }
       }, () => {
-        console.log('checkInDates 已更新到视图:', this.data.checkInDates);
+        debug('checkInDates 已更新到视图:', this.data.checkInDates);
       });
 
       // 移除 generateCalendar() 调用，由调用者统一处理
@@ -297,13 +297,13 @@ Page({
    * 加载打卡记录
    */
   async loadCheckInHistory() {
-    console.log('=== loadCheckInHistory 开始 ===');
+    debug('=== loadCheckInHistory 开始 ===');
     try {
       const { childId, selectedDate } = this.data;
-      console.log('查询打卡记录:', { childId, selectedDate });
+      debug('查询打卡记录:', { childId, selectedDate });
 
       if (!childId || !selectedDate) {
-        console.log('childId 或 selectedDate 为空，返回');
+        debug('childId 或 selectedDate 为空，返回');
         return;
       }
 
@@ -316,7 +316,7 @@ Page({
         date: selectedDate
       }).get();
 
-      console.log('打卡记录查询结果:', res.data.length, '条');
+      debug('打卡记录查询结果:', res.data.length, '条');
 
       // 获取习惯信息
       const habitIds = res.data.map(item => item.habitId);
@@ -352,10 +352,10 @@ Page({
         };
       });
 
-      console.log('打卡记录列表已组装:', checkInList.length, '条');
+      debug('打卡记录列表已组装:', checkInList.length, '条');
 
       this.setData({ checkInList }, () => {
-        console.log('打卡记录已更新到视图');
+        debug('打卡记录已更新到视图');
         hideLoading();
       });
     } catch (err) {

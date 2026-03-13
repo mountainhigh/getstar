@@ -91,7 +91,10 @@ Page({
         const userInfo = app.getUserInfo();
 
         if (!userInfo.isLoggedIn) {
-          throw new Error('未登录');
+          // 如果未登录，不抛出错误，而是直接返回，让页面显示未登录状态
+          console.log('用户未登录，页面将显示未登录状态');
+          this.setData({ isLoading: false, loadingText: '请先登录' });
+          return;
         }
 
         this.setData({ loadingText: '加载数据中...' });
