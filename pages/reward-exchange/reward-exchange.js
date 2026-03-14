@@ -1,5 +1,6 @@
 const app = getApp()
 const { getStorage, setStorage } = require('../../utils/storage')
+const { debug, info, warn, error } = require('../../utils/logger');
 
 Page({
   data: {
@@ -171,11 +172,24 @@ Page({
   // 加载礼物列表
   loadRewards() {
     this.setData({ loading: true })
+    
+    const app = getApp()
+    const familyId = app.globalData.familyId
+    
+    if (!familyId) {
+      wx.showToast({
+        title: '请先选择家庭',
+        icon: 'none'
+      })
+      this.setData({ loading: false })
+      return
+    }
 
     wx.cloud.callFunction({
       name: 'getRewardList',
       data: {
-        category: this.data.currentCategory === 'all' ? '' : this.data.currentCategory
+        category: this.data.currentCategory === 'all' ? '' : this.data.currentCategory,
+        familyId: familyId
       },
       success: res => {
         if (res.result && res.result.success) {

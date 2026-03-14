@@ -8,6 +8,11 @@ exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext()
 
   try {
+    // 检查familyId参数
+    if (!familyId) {
+      return { success: false, error: '缺少familyId参数' }
+    }
+    
     if (isEdit) {
       // 编辑礼物 - 先检查权限
       const reward = await db.collection('rewards').doc(rewardId).get()
@@ -16,7 +21,8 @@ exports.main = async (event) => {
         return { success: false, error: '礼物不存在' }
       }
       
-      if (reward.data._openid !== OPENID) {
+      // 使用familyId验证权限
+      if (reward.data.familyId !== familyId) {
         return { success: false, error: '无权修改此礼物' }
       }
 
@@ -24,7 +30,7 @@ exports.main = async (event) => {
       await db.collection('rewards').doc(rewardId).update({
         data: {
           ...rewardData,
-          updatedAt: db.serverDate()
+          updateTime: db.serverDate()
         }
       })
 
@@ -34,7 +40,6 @@ exports.main = async (event) => {
       const result = await db.collection('rewards').add({
         data: {
           ...rewardData,
-          _openid: OPENID,
           familyId: familyId,
           stock: -1, // -1 表示无限库存
           enabled: true,

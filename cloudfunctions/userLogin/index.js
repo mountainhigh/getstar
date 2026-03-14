@@ -1,5 +1,11 @@
+/**
+ * 用户登录云函数
+ * 功能：处理用户登录、注册，管理用户-家庭关系
+ * 支持一个家庭加入多个用户的需求
+ */
 const cloud = require('wx-server-sdk');
 
+// 初始化云环境
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 });
@@ -7,20 +13,34 @@ cloud.init({
 const db = cloud.database();
 const _ = db.command;
 
+/**
+ * 云函数主入口
+ * @param {Object} event - 事件参数
+ * @param {string} event.nickname - 用户昵称
+ * @param {string} event.avatar - 用户头像
+ * @param {string} event.familyName - 家庭名称（新用户创建家庭时使用）
+ * @param {boolean} event.createFamily - 是否创建家庭（默认为true）
+ * @param {Object} context - 上下文参数
+ * @returns {Object} 登录结果
+ */
 exports.main = async (event, context) => {
+  // 获取微信上下文信息
   const wxContext = cloud.getWXContext();
   const { OPENID, APPID, UNIONID } = wxContext;
 
   console.log('用户登录:', { OPENID, APPID, UNIONID });
 
   try {
+    // 查询用户是否已存在
     const userRes = await db.collection('users').where({
       openid: OPENID
     }).get();
 
     let userId;
     let isNewUser = false;
+    let userFamilyId = null;
 
+    // 处理新用户注册
     if (userRes.data.length === 0) {
       const userResult = await db.collection('users').add({
         data: {
@@ -42,7 +62,9 @@ exports.main = async (event, context) => {
 
       console.log('新用户创建成功:', userId);
     } else {
+      // 处理老用户登录
       userId = userRes.data[0]._id;
+      userFamilyId = userRes.data[0]?.familyId || null;
 
       const updateData = {
         loginCount: db.command.inc(1),
@@ -50,6 +72,7 @@ exports.main = async (event, context) => {
         updateTime: db.serverDate()
       };
 
+      // 更新用户昵称和头像（如果有变化）
       if (event.nickname && event.nickname !== userRes.data[0].nickname) {
         updateData.nickname = event.nickname;
         updateData.avatar = event.avatar || userRes.data[0].avatar;
@@ -62,15 +85,21 @@ exports.main = async (event, context) => {
       console.log('用户登录信息更新成功:', userId);
     }
 
+    // 查询用户的家庭成员关系
     const familyMemberRes = await db.collection('family_members').where({
       userId: userId,
       status: 'active'
     }).get();
 
-    let familyId = userRes.data[0]?.familyId || null;
     let hasFamily = familyMemberRes.data.length > 0;
-
-    if (!hasFamily) {
+    // 优先使用用户当前选择的家庭（存储在users表的familyId字段中）
+    let familyId = userFamilyId;
+    
+    // 如果用户没有选择家庭且有家庭关系，使用第一个家庭
+    if (!familyId && hasFamily) {
+      familyId = familyMemberRes.data[0].familyId;
+    } else if (!familyId && event.createFamily !== false) {
+      // 如果用户没有家庭且需要创建家庭，创建新家庭
       const familyResult = await db.collection('families').add({
         data: {
           name: event.familyName || '我的家庭',
@@ -83,6 +112,7 @@ exports.main = async (event, context) => {
       familyId = familyResult._id || familyResult.id || familyResult.data?._id;
       console.log('家庭创建成功:', familyId);
 
+      // 创建用户-家庭关系（owner角色）
       await db.collection('family_members').add({
         data: {
           familyId: familyId,
@@ -97,37 +127,33 @@ exports.main = async (event, context) => {
       });
       console.log('用户-家庭关系创建成功 (owner)');
 
+      // 更新用户表的familyId字段
       await db.collection('users').doc(userId).update({
         data: {
-          familyId: familyId
+          familyId: familyId,
+          updateTime: db.serverDate()
         }
       });
-      console.log('新用户 familyId 更新成功:', userId, familyId);
+      console.log('用户familyId更新成功:', userId, familyId);
 
       hasFamily = true;
-    } else {
-      if (!familyId && familyMemberRes.data.length > 0) {
-        familyId = familyMemberRes.data[0].familyId;
-        await db.collection('users').doc(userId).update({
-          data: {
-            familyId: familyId
-          }
-        });
-        console.log('用户 familyId 已同步:', familyId);
-      }
-      console.log('家庭已存在:', familyId);
     }
 
-    const childrenRes = await db.collection('children').where({
-      familyId: familyId
-    }).count();
+    // 查询家庭的孩子数量
+    let childrenCount = 0;
+    if (familyId) {
+      const childrenRes = await db.collection('children').where({
+        familyId: familyId
+      }).count();
+      childrenCount = childrenRes.total;
+    }
 
-    const childrenCount = childrenRes.total;
-
+    // 获取习惯模板（仅新用户返回）
     const templatesRes = await db.collection('habit_templates')
       .orderBy('order', 'asc')
       .get();
 
+    // 构建用户家庭列表
     const userFamilies = [];
     if (hasFamily) {
       for (const member of familyMemberRes.data) {
@@ -137,12 +163,13 @@ exports.main = async (event, context) => {
             familyId: member.familyId,
             familyName: familyInfoRes.data.name,
             role: member.role,
-            isCurrent: member.familyId === familyId
+            isCurrent: member.familyId === familyId // 标记当前选择的家庭
           });
         }
       }
     }
 
+    // 返回登录结果
     return {
       success: true,
       message: '登录成功',

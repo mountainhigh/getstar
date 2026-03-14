@@ -107,14 +107,23 @@ const defaultRewards = [
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
   const { OPENID } = wxContext;
+  const { familyId } = event;
 
   try {
-    console.log('开始初始化用户礼物, OPENID:', OPENID);
+    // 检查familyId参数
+    if (!familyId) {
+      return {
+        success: false,
+        message: '缺少familyId参数'
+      };
+    }
+    
+    console.log('开始初始化家庭礼物, familyId:', familyId);
 
-    // 检查用户是否已经有礼物
+    // 检查家庭是否已经有礼物
     const existingRewards = await db.collection('rewards')
       .where({
-        _openid: OPENID
+        familyId: familyId
       })
       .count();
 
@@ -135,7 +144,7 @@ exports.main = async (event, context) => {
       return db.collection('rewards').add({
         data: {
           ...reward,
-          // 注意：不要手动设置 _openid，云数据库会自动添加
+          familyId: familyId,
           createTime: db.serverDate(),
           updateTime: db.serverDate()
         }
@@ -154,7 +163,7 @@ exports.main = async (event, context) => {
       }
     };
   } catch (error) {
-    console.error('初始化用户礼物失败:', error);
+    console.error('初始化家庭礼物失败:', error);
     return {
       success: false,
       message: '初始化失败',

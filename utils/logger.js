@@ -1,5 +1,5 @@
 // 日志工具
-const DEBUG = true; // 生产环境设置为 false
+const DEBUG = false; // 生产环境设置为 false
 
 /**
  * 调试日志 - 仅开发环境输出

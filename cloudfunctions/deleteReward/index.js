@@ -7,10 +7,10 @@ const db = cloud.database()
 const _ = db.command
 
 exports.main = async (event, context) => {
-  const { rewardId } = event
+  const { rewardId, familyId } = event
 
-  debug('=== 删除礼物云函数开始 ===')
-  debug('rewardId:', rewardId)
+  console.log('=== 删除礼物云函数开始 ===')
+  console.log('rewardId:', rewardId, 'familyId:', familyId)
 
   try {
     if (!rewardId) {
@@ -19,22 +19,23 @@ exports.main = async (event, context) => {
         error: '缺少 rewardId 参数'
       }
     }
+    
+    if (!familyId) {
+      return {
+        success: false,
+        error: '缺少 familyId 参数'
+      }
+    }
 
-    // 获取用户的 OPENID
-    const wxContext = cloud.getWXContext()
-    const openid = wxContext.OPENID
-
-    debug('用户 openid:', openid)
-
-    // 先查询该礼物是否属于当前用户
+    // 先查询该礼物是否属于当前家庭
     const rewardRes = await db.collection('rewards')
       .where({
         _id: rewardId,
-        _openid: openid
+        familyId: familyId
       })
       .get()
 
-    debug('查询结果:', rewardRes)
+    console.log('查询结果:', rewardRes)
 
     if (!rewardRes.data || rewardRes.data.length === 0) {
       return {
@@ -48,7 +49,7 @@ exports.main = async (event, context) => {
       .doc(rewardId)
       .remove()
 
-    debug('删除成功')
+    console.log('删除成功')
 
     return {
       success: true,

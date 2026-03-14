@@ -35,13 +35,27 @@ Page({
   async loadRewards() {
     debug('=== loadRewards 开始 ===')
     this.setData({ loading: true })
+    
+    const familyId = app.globalData.familyId
+    
+    if (!familyId) {
+      wx.showToast({
+        title: '请先选择家庭',
+        icon: 'none'
+      })
+      this.setData({ loading: false })
+      return
+    }
 
     try {
       const db = wx.cloud.database()
 
-      // 直接调用云函数，不再需要 familyId
+      // 调用云函数，传递familyId
       wx.cloud.callFunction({
         name: 'getRewardList',
+        data: {
+          familyId: familyId
+        },
         success: res => {
           if (res.result && res.result.success) {
             debug('礼物列表查询成功:', res.result.data.length, '条记录')
@@ -278,10 +292,12 @@ Page({
             wx.showLoading({ title: '删除中...' })
 
             // 使用云函数删除礼物
+            const familyId = app.globalData.familyId
             const deleteRes = await wx.cloud.callFunction({
               name: 'deleteReward',
               data: {
-                rewardId: rewardId
+                rewardId: rewardId,
+                familyId: familyId
               }
             })
 

@@ -1,3 +1,4 @@
+const { debug, info, warn, error } = require('../../utils/logger');
 const db = wx.cloud.database();
 const _ = db.command;
 

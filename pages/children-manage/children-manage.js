@@ -1,5 +1,6 @@
 const { showToast, showLoading, hideLoading } = require('../../utils/util');
 const { getStorage, setStorage } = require('../../utils/storage');
+const { debug, info, warn, error } = require('../../utils/logger');
 
 Page({
   data: {

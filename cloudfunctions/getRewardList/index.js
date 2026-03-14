@@ -11,35 +11,47 @@ exports.main = async (event, context) => {
   const { OPENID } = wxContext;
 
   try {
-    const { category } = event;
-    debug('获取礼物列表, category:', category, 'OPENID:', OPENID);
+    const { category, familyId } = event;
+    
+    // 检查familyId参数
+    if (!familyId) {
+      return {
+        success: false,
+        message: '缺少familyId参数'
+      };
+    }
+    
+    console.log('获取礼物列表, category:', category, 'familyId:', familyId);
 
-    // 先检查用户是否有礼物，如果没有则自动初始化
+    // 先检查家庭是否有礼物，如果没有则自动初始化
     const countRes = await db.collection('rewards')
       .where({
-        _openid: OPENID
+        familyId: familyId
       })
       .count();
 
-    debug('用户礼物数量:', countRes.total);
+    console.log('家庭礼物数量:', countRes.total);
 
     if (countRes.total === 0) {
-      debug('用户没有礼物，开始初始化默认礼物');
+      console.log('家庭没有礼物，开始初始化默认礼物');
       try {
         await cloud.callFunction({
-          name: 'initUserRewards'
+          name: 'initUserRewards',
+          data: {
+            familyId: familyId
+          }
         });
-        debug('默认礼物初始化成功');
+        console.log('默认礼物初始化成功');
       } catch (initError) {
         console.error('初始化默认礼物失败:', initError);
         // 即使初始化失败也继续，返回空列表
       }
     }
 
-    // 查询用户的礼物列表（使用 _openid）
+    // 查询家庭的礼物列表（使用 familyId）
     let query = db.collection('rewards')
       .where({
-        _openid: OPENID
+        familyId: familyId
       })
       .orderBy('createTime', 'desc');
 
@@ -48,7 +60,7 @@ exports.main = async (event, context) => {
     }
 
     const res = await query.get();
-    debug('查询结果:', res.data.length, '条记录');
+    console.log('查询结果:', res.data.length, '条记录');
 
     return {
       success: true,

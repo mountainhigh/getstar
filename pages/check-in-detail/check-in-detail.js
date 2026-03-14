@@ -1,4 +1,5 @@
 const { showToast, showLoading, hideLoading, formatDate } = require('../../utils/util');
+const { debug, info, warn, error } = require('../../utils/logger');
 
 Page({
   data: {
