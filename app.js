@@ -24,6 +24,11 @@ App({
       isInitialized: false, // 是否初始化完成
     };
 
+    // 创建初始化完成的 Promise
+    this.initPromise = new Promise((resolve) => {
+      this.initResolve = resolve;
+    });
+
     // 检查登录状态并初始化用户数据
     this.checkLoginAndInit();
   },
@@ -33,16 +38,9 @@ App({
       // 首先初始化数据库（只在首次启动时执行）
       await this.initDatabaseIfNeeded();
 
-      // 获取微信用户信息（昵称和头像）
-      const userInfo = await this.getWeChatUserInfo();
-
-      // 调用登录云函数获取完整用户信息（传入微信昵称和头像）
+      // 调用登录云函数获取完整用户信息（静默登录，不获取用户信息）
       const loginRes = await wx.cloud.callFunction({
-        name: 'userLogin',
-        data: {
-          nickname: userInfo.nickName || '',
-          avatar: userInfo.avatarUrl || ''
-        }
+        name: 'userLogin'
       });
 
       if (loginRes.result && loginRes.result.success) {
@@ -80,11 +78,13 @@ App({
         }
       } else {
         console.error('登录云函数调用失败:', loginRes.result);
-        this.globalData.isInitialized = true; // 即使失败也标记为已初始化
+        this.globalData.isInitialized = true;
       }
+      this.initResolve();
     } catch (err) {
       console.error('登录初始化失败:', err);
-      this.globalData.isInitialized = true; // 即使失败也标记为已初始化
+      this.globalData.isInitialized = true;
+      this.initResolve();
     }
   },
 

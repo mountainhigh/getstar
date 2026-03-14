@@ -42,8 +42,11 @@ Page({
     try {
       showLoading('加载中...');
 
-      // 检查登录状态
+      // 等待 app 初始化完成
       const app = getApp();
+      await app.initPromise;
+
+      // 检查登录状态
       const userInfo = app.getUserInfo();
 
       if (!userInfo.isLoggedIn) {
@@ -439,10 +442,41 @@ Page({
   showAbout() {
     wx.showModal({
       title: '关于 攒星星',
-      content: '攒星星 - 儿童行为激励管理小程序\n帮助孩子养成好习惯',
+      content: '攒星星 - 儿童行为激励管理小程序\\n帮助孩子养成好习惯',
       showCancel: false
     });
   },
+
+  /**
+   * 修复数据
+   */
+  async fixData() {
+    wx.showModal({
+      title: '确认修复',
+      content: '此操作将为当前用户修复 familyId，是否继续？',
+      success: async (res) => {
+        if (res.confirm) {
+          showLoading('修复中...');
+          try {
+            const result = await wx.cloud.callFunction({
+              name: 'fixFamilyData'
+            });
+            hideLoading();
+            if (result.result.success) {
+              showToast(result.result.message, 'success');
+            } else {
+              showToast(result.result.message, 'error');
+            }
+          } catch (err) {
+            hideLoading();
+            console.error('修复数据失败:', err);
+            showToast('修复失败', 'error');
+          }
+        }
+      }
+    });
+  },
+
 
   /**
    * 修复 children 表的 isDeleted 字段（临时函数）
